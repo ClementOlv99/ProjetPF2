@@ -247,8 +247,4 @@ module Collision (F:Frame) =
       let x_flux = Flux.map (fun (nx, ny) -> (nx+.x, ny+.y)) (integre F.dt v_flux) in
       unless (Flux.map2 (fun x v -> (x, v)) x_flux v_flux) (fun ((x,y),(dx,dy)) -> contact_x x dx || contact_y y dy) (fun ((x,y), (dx, dy)) -> run ((x, y), (rebond_x x dx, rebond_y y dy)))
 
-  
-
-  
-
   end
