@@ -13,7 +13,10 @@ let graphic_format =
     (int_of_float ((2. *. Box.marge) +. Box.supy -. Box.infy))
 
 let draw_state etat = 
-  draw_briques 
+  match etat with
+    | (b,r,s,(quadtree,n)) -> draw_briques quadtree;
+                              draw_raquette r;
+                              draw_balle ;
 
 let draw flux_etat =
   let rec loop flux_etat last_score =
