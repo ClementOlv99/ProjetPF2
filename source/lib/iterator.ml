@@ -1,3 +1,5 @@
+
+
 (* interface des itérateurs (implémentée par les flux) *)
 module type Intf = sig
   type 'a t

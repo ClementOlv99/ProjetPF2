@@ -4,18 +4,7 @@ open Iterator
 
 (* exemple d'ouvertue d'un tel module de la bibliotheque : *)
 open Game
-
-module Init = struct
-  let dt = 1000. /. 60. (* 60 Hz *)
-end
-
-module Box = struct
-  let marge = 10.
-  let infx = 10.
-  let infy = 10.
-  let supx = 790.
-  let supy = 590.
-end
+open Dessin
 
 let graphic_format =
   Format.sprintf
@@ -23,7 +12,12 @@ let graphic_format =
     (int_of_float ((2. *. Box.marge) +. Box.supx -. Box.infx))
     (int_of_float ((2. *. Box.marge) +. Box.supy -. Box.infy))
 
-let draw_state etat = failwith "A DEFINIR"
+let draw_state etat = 
+  match etat with
+    | (b,r,s,(quadtree,n)) -> draw_briques quadtree;
+                              draw_raquette r;
+                              draw_balle b;
+                              draw_score s
 
 (* extrait le score courant d'un etat : *)
 let score etat : int = failwith "A DEFINIR"
@@ -48,4 +42,4 @@ let draw flux_etat =
   Format.printf "Score final : %d@\n" score;
   Graphics.close_graph ()
 
-let () = game_hello ()
+let a = game_init [(12,14); (14,177)]
