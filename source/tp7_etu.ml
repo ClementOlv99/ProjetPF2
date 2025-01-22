@@ -80,7 +80,7 @@ module type Frame =
     val box_y : float * float
   end
 
-  module VraiFrame:Frame =
+module VraiFrame:Frame =
   struct
     let dt = 0.01;;
     let box_x = (-500., 500.);;
