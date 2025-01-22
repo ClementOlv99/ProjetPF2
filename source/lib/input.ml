@@ -1,5 +1,5 @@
 open Iterator
-open Game
+open Init
 
 (* flux de paires (abscisse souris, booléen vrai si bouton appuyé) *)
 let mouse =
@@ -68,20 +68,31 @@ let is_colliding balle rectangle (vx,vy) : (float*float)  =
 
 module Collision = struct
 
-  
+  let dt = Initi
+
+  let integre dt flux =
+    (* valeur initiale de l'intégrateur                         *)
+    let init = ( 0., 0.) in
+    (* fonction auxiliaire de calcul de acc_{i} + dt * flux_{i} *)
+    let iter (acc1, acc2) (flux1, flux2) =
+      (acc1 +. dt *. flux1, acc2 +. dt *. flux2) in
+    (* définition récursive du flux acc                         *)
+    let rec acc =
+      Tick (lazy (Some (init, Flux.map2 iter acc flux)))
+    in acc;;
 
   let rec unless flux cond f_flux =
     match Flux.uncons flux with
     | None -> Flux.vide
     | Some (a, fl) -> if cond a then f_flux a else Flux.cons a (unless fl cond f_flux)
 
-  let rec run : etat -> etat Flux.t =
+  let rec run : etat_balle -> etat_balle Flux.t =
 
     fun ((x0,y0),(dx0,dy0)) -> 
 
       let a = Flux.constant (0., -9.81) in
 
-      let v = Flux.map (fun (a , b) -> (a +. dx0, b +. dy0)) (integre F.dt a) in
+      let v = Flux.map (fun (a , b) -> (a +. dx0, b +. dy0)) (integre Init.Init.dt a) in
 
       let p = Flux.map (fun (a , b) -> (a +. x0, b +. y0)) (integre F.dt v) in
 

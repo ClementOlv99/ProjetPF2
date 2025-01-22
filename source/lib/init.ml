@@ -1,4 +1,4 @@
-module Init = struct
+module Data = struct
   let dt = 1000. /. 60. (* 60 Hz *)
 end
 
