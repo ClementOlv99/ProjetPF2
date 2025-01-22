@@ -35,4 +35,4 @@ let draw flux_etat =
   Format.printf "Score final : %d@\n" score;
   Graphics.close_graph ()
 
-let ()  = 
+let a = game_init [(12,14); (14,177)]
