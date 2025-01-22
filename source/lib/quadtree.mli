@@ -1,3 +1,6 @@
+open Game
+
+
 (*                          Module QuadTree                                   *)
 
 type tree

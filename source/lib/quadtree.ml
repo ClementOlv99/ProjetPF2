@@ -1,3 +1,5 @@
+open Game
+
 type coord = float * float
 
 (* coordonnées des coins inférieur gauche et supérieur droit d'une case du quadtree *)

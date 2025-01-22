@@ -1,4 +1,5 @@
 open Iterator
+open Game
 
 (* flux de paires (abscisse souris, booléen vrai si bouton appuyé) *)
 let mouse =
