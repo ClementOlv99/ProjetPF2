@@ -1,13 +1,15 @@
 (*                          Module QuadTree                                   *)
 
 type tree
+type coord
+type limites
 
 (******************************************************************************)
 (*                                                                            *)
 (*      fonction de calcul des points de la prédiction de la balle            *)
 (*                                                                            *)
 (*   signature :                                                              *)
-(*		predict : int -> (int*int) -> (float*float) -> (float*float ) list    *)
+(*		predict : int -> (int*int) -> (float * float) -> coord list  	 	  *)
 (*                                                                            *)
 (*   paramètre(s) : le rayon de la balle									  *)
 (*					les coordonnées de la balle								  *)
@@ -15,7 +17,7 @@ type tree
 (*   résultat     : les trois points de test de colisions future		      *)
 (*                                                                            *)
 (******************************************************************************)
-val predict : int -> (int*int) -> (float * float) -> (float * float) list
+val predict : int -> balle -> coord list
 
 
 (******************************************************************************)
@@ -29,21 +31,21 @@ val predict : int -> (int*int) -> (float * float) -> (float * float) list
 (*   résultat     : un quadtree avce la position de chacunes des briques      *)
 (*                                                                            *)
 (******************************************************************************)
-val create_tree : (int * int) -> (int * int) list -> tree
+val create_tree : limites -> coord list -> tree
 
 (******************************************************************************)
 (*                                                                            *)
 (*      fonction de recherche de brique à portée 					 	      *)
 (*                                                                            *)
-(*   signature : find_brique : quadtree -> (int * int) -> (int * int) option  *)
+(*   signature : find_brique : quadtree -> coord -> coord option  *)
 (*                                                                            *)
 (*   paramètre(s) : le quadtree representant le niveau						  *)
 (*					un couple de float representant la position de la balle   *)
 (*   résultat     : None si pas de briques à portée							  *)
-(*  	Some (int * int) les coordonnées de la brique incriminée sinon	      *)
+(*  	Some (coord) les coordonnées de la brique incriminée sinon	      *)
 (*                                                                            *)
 (******************************************************************************)
-val find_brique : tree -> (float * float) -> (int * int) option
+val find_brique : tree -> coord -> coord option
 
 (******************************************************************************)
 (*                                                                            *)
@@ -56,19 +58,5 @@ val find_brique : tree -> (float * float) -> (int * int) option
 (*   résultat     : le quadtree corrigé                                       *)
 (*                                                                            *)
 (******************************************************************************)
-val destroy : tree -> (int * int) -> tree
+val destroy : tree -> coord -> tree
 
-(******************************************************************************)
-(*                                                                            *)
-(*      fonction de comparaison                                               *)
-(*                                                                            *)
-(*   signature :                                                              *)
-(*		inside : (float * float) -> (float * float) * (float * float) -> bool *)
-(*                                                                            *)
-(*   paramètre(s) : les coordonnées de la balle						          *)
-(*					les coordonnéesd des limites de l'espace				  *)
-(*   résultat     : true si la balle est dans l'espace delimité               *)
-(*			par les coordonnées, false sinon.                                 *)
-(*                                                                            *)
-(******************************************************************************)
-val inside : (float * float) -> (float * float) * (float * float) -> bool
