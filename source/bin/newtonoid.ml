@@ -4,7 +4,7 @@ open Iterator
 
 (* exemple d'ouvertue d'un tel module de la bibliotheque : *)
 open Game
-open Dessin
+open Init
 
 let graphic_format =
   Format.sprintf
