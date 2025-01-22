@@ -1,20 +1,47 @@
 open Iterator
+(** S'occupe de la partie collisions et physiques du jeu.
+    *)
 
 val mouse : (float * bool) flux
 
 (* le type des états de la forme (x, y), (dx, dy)  *)
 (* i.e. position (x, y) et vitesse (dx, dy)        *)
-type etat = (float * float) * (float * float)
+type etat
 
-type rect = (float*float)*(float*float)
-type ball = (float*float)*float
+type rect
+(** Représente un rectangle.
 
-val get_origin : rect -> (float*float)
-val get_extremum : rect -> (float*float)
-val get_size : rect -> (float*float)
+    (x,y),(tx,ty) :
+      - x : float = origine sur l'axe X 
+      - y : float = origine sur l'axe Y
+      - tx : float = taille sur l'axe X 
+      - ty : float = taille sur l'axe Y 
+    *)
+type ball
+(** Représente une balle (cercle).
 
-val get_center : ball -> (float*float)
-val get_radius : rect -> float
+    (x,y),r :
+      - x : float = centre sur l'axe X 
+      - y : float = centre sur l'axe Y
+      - r : float = rayon
+    *)
+
+val is_colliding : ball -> rect -> (float*float) -> (float*float)
+(** Vérifie si une balle et un rectangle sont en collision.
+    
+    Arguments : balle rectangle (vx,vy)
+    - balle : ball = balle sujet de la collision
+    - rectangle : rect = rectangle sujet de la collision
+    - vx : float : vitesse de la balle sur l'axe X
+    - vy : float : vitesse de la balle sur l'axe Y
+
+    Résultat : (nx,ny)
+      - nx : float = composante sur X de la normale de la collision
+      - ny : float = composante sur Y de la normale de la collision
+    
+    Post-Conditions :
+      - le vecteur (nx,ny) est normal
+    *)
 
 module type Collision = 
   sig
