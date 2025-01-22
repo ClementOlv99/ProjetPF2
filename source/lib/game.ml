@@ -1,7 +1,11 @@
 open Quadtree
 open Iterator
 open Input
+open Init
 open Dessin
+
+(*etat de la partie*)
+type etat = balle * raquette * score * (Quadtree.tree * int)
 
 let game_init liste_brique = 
 

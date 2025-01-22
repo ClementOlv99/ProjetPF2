@@ -1,3 +1,7 @@
+module Init = struct
+  let dt = 1000. /. 60. (* 60 Hz *)
+end
+
 module Box = struct
   let marge = 10.
   let infx = 10.
@@ -6,9 +10,17 @@ module Box = struct
   let supy = 590.
 end
 
+module TailleBriqueInit = struct
+  let width = 60
+  let height = 20
+end
+
+module RaquetteInit = struct
+  let width = 80
+  let height = 10
+  let ypos = 30
+end
+
 type balle = (float * float) * (float * float)
 type raquette = float
 type score = (int * int)
-
-(*etat de la partie*)
-type etat = balle * raquette * score * (Quadtree.tree * int)

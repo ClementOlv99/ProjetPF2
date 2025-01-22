@@ -18,4 +18,4 @@ let draw_raquette xpos = Graphics.draw_rect (int_of_float xpos) RaquetteInit.ypo
                          Graphics.set_color blue;
                          Graphics.fill_rect (int_of_float xpos) RaquetteInit.ypos RaquetteInit.width RaquetteInit.height
 
-let draw_balle =
+let draw_balle = failwith "A DEFINIR"

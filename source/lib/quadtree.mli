@@ -1,4 +1,4 @@
-open Game
+open Init
 
 
 (*                          Module QuadTree                                   *)
