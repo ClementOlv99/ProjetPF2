@@ -22,5 +22,4 @@ module RaquetteInit = struct
 end
 
 type balle = (float * float) * (float * float)
-type raquette = float
 type score = (int * int)
