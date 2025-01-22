@@ -12,28 +12,11 @@ module Box = struct
   let supy = 590.
 end
 
-(*paramétres*)
-
-(*module TailleBriqueInit = struct
+module TailleBriqueInit = struct
   let width = 60
   let height = 20
 end
 
-<<<<<<< HEAD
-let draw_briques tree = 
-  match tree with 
-    | Leaf (l,co) -> 
-      match co with
-        | None -> ()
-        | (x1,y1) ->  Graphics.draw_rect x1 y1 width height; 
-                      Graphics.synchronize()
-    | Node (l,t1,t2,t3,t4) ->  draw_briques t1;
-                               draw_briques t2;
-                               draw_briques t3;
-                               draw_briques t4
-
-*)
-=======
 module RaquetteInit = struct
   let width = 80
   let height = 10
@@ -58,5 +41,4 @@ let draw_raquette xpos = Graphics.draw_rect (int_of_float xpos) RaquetteInit.ypo
                          Graphics.set_color blue;
                          Graphics.fill_rect (int_of_float xpos) RaquetteInit.ypos RaquetteInit.width RaquetteInit.height
 
-let draw_balle = 
->>>>>>> f652ef304e0f9a8b75c07ffe9787a9b86ee2fbab
+let draw_balle =
