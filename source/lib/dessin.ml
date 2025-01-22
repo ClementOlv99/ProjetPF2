@@ -14,7 +14,7 @@ end
 
 (*paramétres*)
 
-module TailleBriqueInit = struct
+(*module TailleBriqueInit = struct
   let width = 60
   let height = 20
 end
@@ -30,3 +30,5 @@ let draw_briques tree =
                                draw_briques t2;
                                draw_briques t3;
                                draw_briques t4
+
+*)
