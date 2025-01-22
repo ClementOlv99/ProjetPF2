@@ -1,7 +1,13 @@
-type tree = Noeud of ((float * float) * (float * float)) * (branche option  * (int * int) option)
-and branche = (tree * tree * tree * tree)
+type coord = float * float
 
-let bind f ent flott = f flott (Float.of_int ent)
+(* coordonnées des coins inférieur gauche et supérieur droit d'une case du quadtree *)
+type limites = coord * coord
+
+
+(** type du quadtree *)
+type tree =
+  | Leaf of limites * (coord option)
+  | Node of limites * tree * tree * tree * tree
 
 (******************************************************************************)
 (*      fonction intermediaire de comparaison                                 *)
@@ -12,7 +18,7 @@ let bind f ent flott = f flott (Float.of_int ent)
 (*   résultat     : true si la balle est dans l'espace delimité               *)
 (*			par les coordonnées, false sinon.                                 *)
 (******************************************************************************)
-let inside : (float * float) -> (float * float) * (float * float) -> bool =
+let inside : coord -> limites -> bool =
 	fun coord_balle intervalle ->
 		let (xb, yb) = coord_balle in
 		let ((xmin , xmax) , (ymin , ymax)) = intervalle in
@@ -25,14 +31,19 @@ let inside : (float * float) -> (float * float) * (float * float) -> bool =
 (*   paramètre(s) : les coordonnées du vecteur						          *)
 (*   résultat     : la norme du vecteur 	                                  *)
 (******************************************************************************)
-let norm : (float * float) -> float =
-	fun coordVect ->
-		let (xv, yv) = coordVect in
+let norme : coord -> float =
+	fun coord_vect ->
+		let (xv, yv) = coord_vect in
 		sqrt ((Float.pow xv 2.0) +. (Float.pow yv 2.0))
 
 
-let predict : int -> (int*int) -> (float * float) -> (float * float) list =
-	fun r coordBalle vitesseBalle ->
-		let (xb, yb) = coordBalle in
-		let (vx, vx) = vitesseBalle in
+let predict : int -> coord -> (float * float) -> coord list =
+	fun r coord_balle vitesse_balle ->
+		let (xb, yb) = coord_balle in
+		let (vx, vy) = vitesse_balle in
+		let (dir_x, dir_y) = ((vx /. norme(vitesse_balle)), (vy /. norme(vitesse_balle))) in
+		let (pred_x, pred_y) = (xb +. (r *. dir_x)) ,(yb +. (r *. dir_y)) in
+		let a = r dir_x in a
+
+
 		(*x + "r*(vx/norme(v))" + vx*)
