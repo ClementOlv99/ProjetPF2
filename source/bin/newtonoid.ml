@@ -15,9 +15,6 @@ let graphic_format =
 let draw_state etat = 
   draw_briques 
 
-(* extrait le score courant d'un etat : *)
-let score etat : int = failwith "A DEFINIR"
-
 let draw flux_etat =
   let rec loop flux_etat last_score =
     match Flux.(uncons flux_etat) with
@@ -38,4 +35,4 @@ let draw flux_etat =
   Format.printf "Score final : %d@\n" score;
   Graphics.close_graph ()
 
-let ()  = draw 
+let ()  = 
