@@ -9,5 +9,4 @@ module Box :
   end
 module TailleBriqueInit : sig val width : int val height : int end
 module RaquetteInit : sig val width : int val height : int val ypos : int end
-type balle = (float * float) * (float * float)
-type score = int * int
+

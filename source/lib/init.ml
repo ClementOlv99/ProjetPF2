@@ -21,4 +21,12 @@ module RaquetteInit = struct
   let ypos = 30
 end
 
+module BalleInit = struct
+  let radius = 10.
+end
+
+module TabBriquesInit = struct 
+  let score = 50 in
+  let nbBrique = 10 in
+end
 

@@ -86,16 +86,11 @@ module Collision = struct
     | None -> Flux.vide
     | Some (a, fl) -> if cond a then f_flux a else Flux.cons a (unless fl cond f_flux)
 
-  let rec run : etat_balle -> etat_balle Flux.t =
 
-    fun ((x0,y0),(dx0,dy0)) -> 
+  
 
-      let a = Flux.constant (0., -9.81) in
+  let rec run : etat_balle colliding -> etat_balle Flux.t = failwith "graaaah"
 
-      let v = Flux.map (fun (a , b) -> (a +. dx0, b +. dy0)) (integre Init.Init.dt a) in
-
-      let p = Flux.map (fun (a , b) -> (a +. x0, b +. y0)) (integre F.dt v) in
-
-      Flux.map2 (fun pn vn -> (pn, vn)) p v
+    
     
 end
