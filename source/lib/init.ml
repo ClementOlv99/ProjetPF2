@@ -21,5 +21,4 @@ module RaquetteInit = struct
   let ypos = 30
 end
 
-type balle = (float * float) * (float * float)
-type score = (int * int)
+
