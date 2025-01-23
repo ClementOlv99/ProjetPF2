@@ -34,7 +34,7 @@ let draw flux_etat =
       draw_state etat;
       (* FIN DESSIN ETAT *)
       Graphics.synchronize ();
-      Unix.sleepf Init.dt;
+      Unix.sleepf Data.dt;
       loop flux_etat' (last_score + score etat)
     | _ -> assert false
   in
@@ -45,3 +45,7 @@ let draw flux_etat =
   Graphics.close_graph ()
 
 let a = game_init [(12,14); (14,177)]
+
+let baseetat = ( ((0.,0.),5.), 40.,0,((create_tree ((0.,0.),(10.,10.)) Nil),1))
+
+let () = draw (Flux.constant  baseetat)

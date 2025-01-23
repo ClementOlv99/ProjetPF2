@@ -19,7 +19,7 @@ let game_init liste_brique =
 
   let score = 0, 3 in
 
-  let quadtreeB = create_tree (Box.supx, Box.supy) liste_brique in
+  let quadtreeB = create_tree ((0.,0.),(Box.supx, Box.supy)) liste_brique in
 
   (balle, raquette, score, (quadtreeB, List.length liste_brique))
 
@@ -29,7 +29,7 @@ let raquette_update =
   Flux.unfold
     (fun prev_x ->
       let x, _ = Graphics.mouse_pos () in
-      let dx = (x -. prev_x) /. Init.dt in
+      let dx = (x -. prev_x) /. Data.dt in
       Some ((float_of_int x, dx, Graphics.button_down ()), x))
     ()
 
