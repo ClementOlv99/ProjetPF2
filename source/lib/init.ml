@@ -26,7 +26,7 @@ module BalleInit = struct
 end
 
 module TabBriquesInit = struct 
-  let score = 50 in
-  let nbBrique = 10 in
+  let score = 50 
+  let nbBrique = 10 
 end
 
