@@ -5,6 +5,8 @@ open Iterator
 (* exemple d'ouvertue d'un tel module de la bibliotheque : *)
 open Game
 open Init
+open Dessin
+open Quadtree
 
 let graphic_format =
   Format.sprintf
@@ -14,13 +16,13 @@ let graphic_format =
 
 let draw_state etat = 
   match etat with
-    | (b,r,s,(quadtree,n)) -> draw_briques quadtree;
-                              draw_raquette r;
-                              draw_balle b;
-                              draw_score s
+    | (b,r,s,(quadtree,n)) -> draw_briques quadtree TailleBriqueInit.width TailleBriqueInit.height;
+                              draw_raquette r
+                              (*draw_balle b;
+                              draw_score s*)
 
 (* extrait le score courant d'un etat : *)
-let score etat : int = failwith "A DEFINIR"
+let score etat : int = 1
 
 let draw flux_etat =
   let rec loop flux_etat last_score =

@@ -82,3 +82,4 @@ val purge_tree : quadtree -> coord list -> quadtree
 		- le QuadTree corrigé.
 *)
 
+val draw_briques : quadtree -> int -> int -> unit
