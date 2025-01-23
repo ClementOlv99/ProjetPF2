@@ -6,9 +6,10 @@ val mouse : (float * bool) flux
 
 (* le type des états de la forme (x, y), (dx, dy)  *)
 (* i.e. position (x, y) et vitesse (dx, dy)        *)
-type etat_balle
+type etat_balle  = (float*float)*(float*float)
 
-type rect
+
+type rect = (float*float)*(float*float)
 (** Représente un rectangle.
 
     (x,y),(tx,ty) :
@@ -17,7 +18,7 @@ type rect
       - tx : float = taille sur l'axe X 
       - ty : float = taille sur l'axe Y 
     *)
-type ball
+type ball = (float*float)*float
 (** Représente une balle (cercle).
 
     (x,y),r :
@@ -43,15 +44,13 @@ val is_colliding : ball -> rect -> (float*float) -> (float*float)
       - le vecteur (nx,ny) est normal
     *)
 
-(*module type Collision = 
-  sig
+module type Collision = sig
+  
   val dt : float
-
+  val integre : float -> etat_balle Flux.t -> etat_balle Flux.t
   val contact_x : float -> float -> bool (* Args : pos_x, dx -> Result : bool *)
+  val rebond_x : float -> float -> float (* Args : pos_x, dx -> Result : bool *)
   val contact_y : float -> float -> bool (* Args : pos_x, dx -> Result : bool *)
-  val rebond_x : float -> float -> bool (* Args : pos_x, dx -> Result : bool *)
-  val rebond_y : float -> float -> bool (* Args : pos_x, dx -> Result : bool *)
+  val rebond_y : float -> float -> float (* Args : pos_x, dx -> Result : bool *)
 
-  val unless : 'a flux -> ('a -> bool) -> ('a -> 'a flux) -> 'a flux
-
-  end*)
+end

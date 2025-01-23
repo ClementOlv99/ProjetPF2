@@ -1,6 +1,14 @@
 open Iterator
 open Init
 
+
+type etat_balle  = (float*float)*(float*float)
+type rect = (float*float)*(float*float)
+type ball = (float*float)*float
+
+
+
+
 (* flux de paires (abscisse souris, booléen vrai si bouton appuyé) *)
 let mouse =
   Flux.unfold
@@ -9,9 +17,7 @@ let mouse =
       Some ((float_of_int x, Graphics.button_down ()), ()))
     ()
 
-type etat_balle = (float*float)*(float*float)
-type rect = (float*float)*(float*float)
-type ball = (float*float)*float
+
 
 let is_colliding balle rectangle (vx,vy) : (float*float)  =
 
@@ -66,25 +72,34 @@ let is_colliding balle rectangle (vx,vy) : (float*float)  =
         else (* Si dedans (x) et dedans (y) *)
             (vect_to_dir (vx,vy))
 
-module Collision = struct
 
+module Collision = struct
   let dt = Data.dt
 
   let integre dt flux =
-    (* valeur initiale de l'intégrateur                         *)
-    let init = ( 0., 0.) in
-    (* fonction auxiliaire de calcul de acc_{i} + dt * flux_{i} *)
+    let init = (0., 0.) in
     let iter (acc1, acc2) (flux1, flux2) =
       (acc1 +. dt *. flux1, acc2 +. dt *. flux2) in
-    (* définition récursive du flux acc                         *)
     let rec acc =
       Tick (lazy (Some (init, Flux.map2 iter acc flux)))
-    in acc;;
+    in acc
 
-  let rec unless flux cond f_flux =
-    match Flux.uncons flux with
-    | None -> Flux.vide
-    | Some (a, fl) -> if cond a then f_flux a else Flux.cons a (unless fl cond f_flux)
-    
-    
+  let contact_x x dx = 
+    if (x > Box.supx) && (dx > 0.) then true
+    else if (x < Box.infx) && (dx < 0.) then true
+    else false
+
+  let rebond_x x dx = 
+    if contact_x x dx then (-.dx) else dx
+
+  let contact_y y dy = 
+    if (y > Box.supy) && (dy > 0.) then true
+    else if (y < Box.infy) && (dy < 0.) then true
+    else false
+
+  let rebond_y y dy = 
+    if contact_y y dy then (-.dy) else dy
 end
+            
+
+
