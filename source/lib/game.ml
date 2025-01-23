@@ -19,7 +19,7 @@ let game_init liste_brique =
 
   let score = 0, 3 in
 
-  let quadtreeB = create_tree (Box.supx, Box.supy/2) liste_brique in
+  let quadtreeB = create_tree (Box.supx, Box.supy) liste_brique in
 
   (balle, raquette, score, (quadtreeB, List.length liste_brique))
 
@@ -54,7 +54,7 @@ let balle_update : raquette Flux.t -> raquette -> balle -> quadtree -> balle Flu
         let a = Flux.constant (0.0, -.g) in
         let v = Flux.map (fun (vx, vy) -> (vx +. dx, vy +. dy)) (integre F.dt a) in
         let p = Flux.map (fun (px, py) -> (px +. x, py +. y)) (integre F.dt v) in
-        Flux.unless (Flux.map2 (fun pn vn -> (pn, vn)) p v) (fun ((x,y),(dx,dy)) -> collision (x,y) (dx,dy)) (fun ((x,y), (dx, dy)) -> run_collision ((x, y), (rebond_x x dx, rebond_y y dy)))
+        Flux.unless (Flux.map2 (fun pn vn -> (pn, vn)) p v) (fun ((x,y),(dx,dy)) -> collision (x,y) (dx,dy) || contact_x x dx || contact_y y dy) (fun ((x,y), (dx, dy)) -> run_collision ((x, y), (rebond_x x dx, rebond_y y dy)))
       in
 
 
@@ -65,37 +65,14 @@ let balle_update : raquette Flux.t -> raquette -> balle -> quadtree -> balle Flu
         let a = Flux.constant (0.0, -.g) in
 
         match (is_colliding ((x,y), BalleInit.radius) ((x,y), (TailleBriqueInit.width, TailleBriqueInit.height)) (dx, dy)) with
-          | (0.0,0.0) -> run_out_quadtree ((x,y), (dx, dy))
-          | (-1.0,0.0) -> run_out_quadtree ((x,y), (rebond_x x dx, dy))
-          | (1.0,0.0) -> run_out_quadtree ((x,y), (rebond_x x dx, dy))
-          | (0.0,-1.0) -> run_out_quadtree ((x,y), (dx, rebond_y y dy))
-          | (0.0,1.0) -> run_out_quadtree ((x,y), (dx, rebond_y y dy))
+          | (-1.0,0.0) | (1.0,0.0) -> run ((x,y), (-.dx, dy))
+          | (0.0,-1.0) | (0.0,1.0) -> run ((x,y), (dx, -.dy))
+          | (0.0,0.0) -> run ((x,y), (dx, dy))
       in
 
+      run ((x,y), (dx, dy))
 
-    let run_out_quadtree : etat -> etat Flux.t = 
-      fun ((x0,y0),(dx0,dy0)) -> 
-        let a = Flux.constant (0., -9.81) in
-  
-        let v = Flux.map (fun (a , b) -> (a +. dx0, b +. dy0)) (integre F.dt a) in
-  
-        let p = Flux.map (fun (a , b) -> (a +. x0, b +. y0)) (integre F.dt v) in
-        Flux.map2 (fun pn vn -> (pn, vn)) p v  
-      in
-
-
-
-    if y > Box.supy then 
-      run ((x, y), (dx, dy))
-    else
-      if y > RaquetteInit.ypos then
-        run_out_quadtree ((x, y), (dx, dy))
-        
-      else
-        if (y - RaquetteInit.ypos) < BalleInit.radius + RaquetteInit.height then
-          run ((x, y), (dx, -.dy))
-        else
-          run_out_quadtree ((x, y), (dx, dy))
+    
           
         
 
@@ -115,25 +92,9 @@ let score_update : score -> int -> balle -> score Flux.t =
     let balle_flux = balle_update raquette_flux raquette balle quadtreeB in
     let score_flux = score_update score nbBrique balle in
 
-    let (x,y), (dx,dy) = balle in*)
+    let (x,y), (dx,dy) = balle in
+*)
     
-    
-
-    
-  
-
-    
-    
-          
-
-      
-          
-
-
-      
-
-
-
 
 
 
