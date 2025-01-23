@@ -5,11 +5,11 @@ type quadtree
 	le type du QuadTree à proprement parler.
 *)
 
-type coord
+type coord = (float * float)
 (**
 	pour stocker les coordonnées de différents objets: coord = (float * float) .
 *)
-type limites
+type limites =coord * coord
 (**
 	pour delimiter un espace, on stock le coin inferieur gauche (noté dans le code "sud-est") et le coin superieur droit (noté dans le code "nord-ouest"): limites = (coord * coord) .
 *)

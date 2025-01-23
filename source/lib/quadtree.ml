@@ -180,9 +180,8 @@ let rec draw_briques : quadtree -> int -> int -> unit =
           	| Some (x1,y1) ->  Graphics.draw_rect (int_of_float x1) (int_of_float y1) width height;
                         			 Graphics.set_color Graphics.blue;
                         			 Graphics.fill_rect (int_of_float x1) (int_of_float y1) width height
-						| _ -> () )
+						)
       | Node (_,t1,t2,t3,t4) ->  draw_briques t1 width height;
                                  draw_briques t2 width height;
                                  draw_briques t3 width height;
                                  draw_briques t4 width height
-			| _ -> failwith "CACA"
