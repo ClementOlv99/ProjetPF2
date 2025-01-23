@@ -45,7 +45,7 @@ let balle_update : raquette Flux.t -> raquette -> balle -> quadtree -> balle Flu
       let is_brique = find_briques quadtreeB (x, y) (dx,dy) in
 
       let rec aux is_brique_aux =
-      match is_brique with 
+        match is_brique with 
         | [] -> 0
         | briquecoord::q -> if is_colliding ((x,y), BalleInit.radius) (briquecoord, (TailleBriqueInit.width, TabBriquesInit.height)) (dx,dy) = (0.0,0.0) then 1 + aux q else aux q
       in
