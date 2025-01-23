@@ -55,9 +55,6 @@ val insert_tree : quadtree -> coord -> quadtree
 
 	- résultat :
 		- le QuadTree avec la brique en plus.
-
-	- cas d'erreurs:
-		- "Rajouter une brique déjà dans presente dans le QuadTree" mène à une boucle infini et c'est relou.
 *)
 
 val find_tree : quadtree -> coord -> coord option

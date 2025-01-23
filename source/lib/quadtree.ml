@@ -93,19 +93,25 @@ fun tree coord_balle ->
 				|false,true  -> find_tree br_so coord_balle
 				|false,false -> find_tree br_se coord_balle
 
-let rec insert_tree : quadtree -> coord -> quadtree =
+let insert_tree : quadtree -> coord -> quadtree =
 fun tree coord_new_br ->
-	match tree with
-		|Leaf (lim, None)  -> Leaf (lim, Some(coord_new_br))
-		|Leaf (lim, Some(coord_old_br)) ->
-			let new_node = Node(lim, Leaf(quadrant_no lim, None), Leaf(quadrant_ne lim, None), Leaf(quadrant_se lim, None), Leaf(quadrant_so lim, None)) in
-				insert_tree (insert_tree new_node coord_old_br) coord_new_br
-		|Node (lim, br_no, br_ne, br_se, br_so) ->
-			match placement coord_new_br lim with
-				|true,true   -> insert_tree br_no coord_new_br
-				|true,false  -> insert_tree br_ne coord_new_br
-				|false,true  -> insert_tree br_so coord_new_br
-				|false,false -> insert_tree br_se coord_new_br
+	let rec aux : quadtree -> coord -> quadtree =
+	fun tree coord_new_br ->
+		match tree with
+			|Leaf (lim, None)  -> Leaf (lim, Some(coord_new_br))
+			|Leaf (lim, Some(coord_old_br)) ->
+				let new_node = Node(lim, Leaf(quadrant_no lim, None), Leaf(quadrant_ne lim, None), Leaf(quadrant_se lim, None), Leaf(quadrant_so lim, None)) in
+					aux (aux new_node coord_old_br) coord_new_br
+			|Node (lim, br_no, br_ne, br_se, br_so) ->
+				match placement coord_new_br lim with
+					|true,true   -> aux br_no coord_new_br
+					|true,false  -> aux br_ne coord_new_br
+					|false,true  -> aux br_so coord_new_br
+					|false,false -> aux br_se coord_new_br
+	in
+		match find_tree tree coord_new_br with
+			|None    -> aux tree coord_new_br
+			|Some(_) -> tree
 
 let create_tree : limites -> coord list -> quadtree =
 fun lim briques ->
