@@ -6,7 +6,7 @@ val mouse : (float * bool) flux
 
 (* le type des états de la forme (x, y), (dx, dy)  *)
 (* i.e. position (x, y) et vitesse (dx, dy)        *)
-type etat
+type etat_balle
 
 type rect
 (** Représente un rectangle.
@@ -43,7 +43,7 @@ val is_colliding : ball -> rect -> (float*float) -> (float*float)
       - le vecteur (nx,ny) est normal
     *)
 
-module type Collision = 
+(*module type Collision = 
   sig
   val dt : float
 
@@ -54,6 +54,4 @@ module type Collision =
 
   val unless : 'a flux -> ('a -> bool) -> ('a -> 'a flux) -> 'a flux
 
-  val run : etat -> etat Flux.t
-
-  end
+  end*)

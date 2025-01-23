@@ -9,7 +9,7 @@ open Dessin
 type raquette = (float * float)
 type balle = (float * float) * (float * float)
 type score = (int * int)
-type etat = balle * raquette score * (quadtree * int)
+type etat = balle * raquette * score * (quadtree * int)
 
 let game_init liste_brique = 
 
@@ -109,13 +109,13 @@ let score_update : score -> int -> balle -> score Flux.t =
       Flux.constant (current_score, lives)
 
 
-let game_update : etat -> etat Flux.t =
+(*let game_update : etat -> etat Flux.t =
   fun (balle, raquette, score, (quadtreeB, nbBrique)) ->
     let raquette_flux = raquette_update in
     let balle_flux = balle_update raquette_flux raquette balle quadtreeB in
     let score_flux = score_update score nbBrique balle in
 
-    let (x,y), (dx,dy) = balle in
+    let (x,y), (dx,dy) = balle in*)
     
     
 

@@ -1,4 +1,3 @@
-open Quadtree
 open Init
 
 

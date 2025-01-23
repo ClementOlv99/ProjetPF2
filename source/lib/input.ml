@@ -68,7 +68,7 @@ let is_colliding balle rectangle (vx,vy) : (float*float)  =
 
 module Collision = struct
 
-  let dt = Initi
+  let dt = Data.dt
 
   let integre dt flux =
     (* valeur initiale de l'intégrateur                         *)
@@ -85,12 +85,6 @@ module Collision = struct
     match Flux.uncons flux with
     | None -> Flux.vide
     | Some (a, fl) -> if cond a then f_flux a else Flux.cons a (unless fl cond f_flux)
-
-
-  
-
-  let rec run : etat_balle colliding -> etat_balle Flux.t = failwith "graaaah"
-
     
     
 end
