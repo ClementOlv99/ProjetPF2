@@ -142,7 +142,7 @@ fun tree ->
 		in
 	match tree with
 		|Leaf (_, _) -> tree
-		|Node (lim, br_no, br_ne, br_se, br_so) -> Node(lim, clean_etage br_no, clean_etage br_ne, clean_etage br_se, clean_etage br_so)
+		|Node (lim, br_no, br_ne, br_se, br_so) -> Node(lim, clean (clean_etage br_no), clean (clean_etage br_ne), clean (clean_etage br_se), clean (clean_etage br_so))
 
 (******************************************************************************)
 (*      fonction interne qui retire une brique d'un quadtree.                 *)

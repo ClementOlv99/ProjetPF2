@@ -13,10 +13,6 @@ type limites
 (**
 	pour delimiter un espace, on stock le coin inferieur gauche (noté dans le code "sud-est") et le coin superieur droit (noté dans le code "nord-ouest"): limites = (coord * coord) .
 *)
-type balle
-(**
-	À retirer car deja mis dans game, juste pour eviter les erreurs d'import pendant la redéction du code.
-*)
 
 val predict : float -> ((float * float) * (float * float)) -> coord list
 (**
