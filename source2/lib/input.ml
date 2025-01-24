@@ -121,7 +121,7 @@ module Collision = struct
 
     else 
       match is_colliding ((x,y), BalleInit.radius) ((bx, by), (float_of_int TailleBriqueInit.width, float_of_int TailleBriqueInit.height)) (dx,dy) with
-        |(0.0,0.0) -> ((rebond_x x dx, rebond_y y dy))
+        |(0.0,0.0) -> (rebond_x x dx, rebond_y y dy)
         |(1.0,0.0) |(-1.0,0.0) -> (-.dx,dy)
         |(0.0,1.0) |(0.0,-1.0) -> (dx,-.dy)
         |_ -> failwith "pas possible"
