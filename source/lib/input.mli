@@ -1,57 +1,15 @@
-open Iterator
-(** S'occupe de la partie collisions et physiques du jeu.
-    *)
-
-val mouse : (float * bool) flux
-
-(* le type des états de la forme (x, y), (dx, dy)  *)
-(* i.e. position (x, y) et vitesse (dx, dy)        *)
-type etat_balle  = (float*float)*(float*float)
-
-
-type rect = (float*float)*(float*float)
-(** Représente un rectangle.
-
-    (x,y),(tx,ty) :
-      - x : float = origine sur l'axe X 
-      - y : float = origine sur l'axe Y
-      - tx : float = taille sur l'axe X 
-      - ty : float = taille sur l'axe Y 
-    *)
-type ball = (float*float)*float
-(** Représente une balle (cercle).
-
-    (x,y),r :
-      - x : float = centre sur l'axe X 
-      - y : float = centre sur l'axe Y
-      - r : float = rayon
-    *)
-
-val is_colliding : ball -> rect -> (float*float) -> (float*float)
-(** Vérifie si une balle et un rectangle sont en collision.
-    
-    Arguments : balle rectangle (vx,vy)
-    - balle : ball = balle sujet de la collision
-    - rectangle : rect = rectangle sujet de la collision
-    - vx : float : vitesse de la balle sur l'axe X
-    - vy : float : vitesse de la balle sur l'axe Y
-
-    Résultat : (nx,ny)
-      - nx : float = composante sur X de la normale de la collision
-      - ny : float = composante sur Y de la normale de la collision
-    
-    Post-Conditions :
-      - le vecteur (nx,ny) est normal
-    *)
-
-    val integre : float -> (float*float) Flux.t -> (float*float) Flux.t
-module type Collision = 
-sig
-  
-  val dt : float
-  val contact_x : float -> float -> bool (* Args : pos_x, dx -> Result : bool *)
-  val rebond_x : float -> float -> float (* Args : pos_x, dx -> Result : bool *)
-  val contact_y : float -> float -> bool (* Args : pos_x, dx -> Result : bool *)
-  val rebond_y : float -> float -> float (* Args : pos_x, dx -> Result : bool *)
-
-end
+type etat_balle = (float * float) * (float * float)
+type rect = (float * float) * (float * float)
+type ball = (float * float) * float
+val mouse : 'a
+val is_colliding :
+  ('a * 'b) * 'c -> ('d * 'e) * ('f * 'g) -> 'h * 'i -> float * float
+val integre : 'a -> 'b -> 'c
+module Collision :
+  sig
+    val dt : 'a
+    val contact_x : 'a -> 'b -> bool
+    val rebond_x : 'a -> 'b -> 'b
+    val contact_y : 'a -> 'b -> bool
+    val rebond_y : 'a -> 'b -> 'b
+  end
