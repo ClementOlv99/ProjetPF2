@@ -72,17 +72,16 @@ let is_colliding balle rectangle (vx,vy) : (float*float)  =
         else (* Si dedans (x) et dedans (y) *)
             (vect_to_dir (vx,vy))
 
+let integre dt flux =
+  let init = (0., 0.) in
+  let iter (acc1, acc2) (flux1, flux2) =
+    (acc1 +. dt *. flux1, acc2 +. dt *. flux2) in
+  let rec acc =
+    Tick (lazy (Some (init, Flux.map2 iter acc flux)))
+  in acc
 
 module Collision = struct
   let dt = Data.dt
-
-  let integre dt flux =
-    let init = (0., 0.) in
-    let iter (acc1, acc2) (flux1, flux2) =
-      (acc1 +. dt *. flux1, acc2 +. dt *. flux2) in
-    let rec acc =
-      Tick (lazy (Some (init, Flux.map2 iter acc flux)))
-    in acc
 
   let contact_x x dx = 
     if (x > Box.supx) && (dx > 0.) then true

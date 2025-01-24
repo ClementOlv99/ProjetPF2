@@ -60,8 +60,8 @@ let balle_update : raquette Flux.t -> raquette -> balle -> quadtree -> balle Flu
       fun ((x,y), (dx, dy)) ->
         
         let a = Flux.constant (0.0, -.g) in
-        let v = Flux.map (fun (vx, vy) -> (vx +. dx, vy +. dy)) (Collision.integre Data.dt a) in
-        let p = Flux.map (fun (px, py) -> (px +. x, py +. y)) (Collision.integre Data.dt v) in
+        let v = Flux.map (fun (vx, vy) -> (vx +. dx, vy +. dy)) (integre Data.dt a) in
+        let p = Flux.map (fun (px, py) -> (px +. x, py +. y)) (integre Data.dt v) in
         Flux.unless (Flux.map2 (fun pn vn -> (pn, vn)) p v) (fun ((x,y),(dx,dy)) -> collision (x,y) (dx,dy) || contact_x x dx || contact_y y dy) (fun ((x,y), (dx, dy)) -> run_collision ((x, y), (rebond_x x dx, rebond_y y dy)))
       in
 

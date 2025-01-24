@@ -44,10 +44,10 @@ val is_colliding : ball -> rect -> (float*float) -> (float*float)
       - le vecteur (nx,ny) est normal
     *)
 
+    val integre : float -> (float*float) Flux.t -> (float*float) Flux.t
 module type Collision = sig
   
   val dt : float
-  val integre : float -> etat_balle Flux.t -> etat_balle Flux.t
   val contact_x : float -> float -> bool (* Args : pos_x, dx -> Result : bool *)
   val rebond_x : float -> float -> float (* Args : pos_x, dx -> Result : bool *)
   val contact_y : float -> float -> bool (* Args : pos_x, dx -> Result : bool *)
