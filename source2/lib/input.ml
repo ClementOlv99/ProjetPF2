@@ -33,7 +33,6 @@ let is_colliding balle rectangle (vx,vy) : (float*float)  =
     else
       if (vy >= 0.0)
         then (0.0,1.0)
-        (* then (print_endline("bbbbbbbbbbbbbbbbbbbbbbbb");Unix.sleepf(2.);(0.0,1.0)) *)
         else (0.0,-1.0)
   in
   let is_point_in_ball_n px py cx cy r : (float*float) =
@@ -75,7 +74,6 @@ let is_colliding balle rectangle (vx,vy) : (float*float)  =
         if (is_point_in_rect (cx) (cy+.r) rx ry rtx rty)
           then (0.0,1.0)
           else (0.0,0.0)
-          (* (print_endline("aaaaaaaaaaaaa");Unix.sleepf(1.);(0.0,1.0) ) *)
         else (* Si dedans (x) et dedans (y) *)
             (vect_to_dir (vx,vy))
 
