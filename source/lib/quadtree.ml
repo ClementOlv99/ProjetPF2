@@ -1,3 +1,5 @@
+open Init
+
 type coord = float * float
 
 (* coordonnées des coins inférieur gauche et supérieur droit d'une case du quadtree *)
@@ -116,7 +118,7 @@ fun tree balle ->
 			|[]     -> list_propre
 			|(t::q) -> if appartient t list_propre then clean_doublon list_propre q else clean_doublon (t::list_propre) q
 	in
-		clean_doublon [] (aux_briq tree (predict RAYON balle ))
+		clean_doublon [] (aux_briq tree (predict BalleInit.radius balle ))
 
 let insert_tree : quadtree -> coord -> quadtree =
 fun tree coord_new_br ->

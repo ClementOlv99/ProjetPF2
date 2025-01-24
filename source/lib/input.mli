@@ -10,7 +10,10 @@ module Collision :
   sig
     val dt : float
     val contact_x : float -> float -> bool
-    val rebond_x : float -> float -> float
     val contact_y : float -> float -> bool
+    val rebond_x : float -> float -> float
     val rebond_y : float -> float -> float
+    val rebond :
+      float * float ->
+      float * float -> (float * float) list -> int * float -> float * float
   end

@@ -60,10 +60,14 @@ module Flux : Intf with type 'a t = 'a flux = struct
   (* implantation rapide mais inefficace de map *)
   let map f i = apply (constant f) i
   let map2 f i1 i2 = apply (apply (constant f) i1) i2
+  let map4 f i1 i2 i3 i4 = apply (apply (apply (apply (constant f) i1) i2) i3) i4
 
-  let rec unless flux cond f_flux =
-    match uncons flux with
-    | None -> vide
-    | Some (a, fl) -> if cond a then f_flux a else cons a (unless fl cond f_flux)
+
+  let rec unless flux cond fflux =
+      Tick(lazy(
+      match uncons flux with
+      |None -> None
+      |Some(x, fs) -> uncons (if (cond x) then fflux x else cons x (unless fs cond fflux))
+    ))
 
 end

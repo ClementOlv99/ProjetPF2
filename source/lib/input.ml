@@ -89,16 +89,53 @@ module Collision = struct
     else if (x < Box.infx) && (dx < 0.) then true
     else false
 
-  let rebond_x x dx = 
-    if contact_x x dx then (-.dx) else dx
+
 
   let contact_y y dy = 
     if (y > Box.supy) && (dy > 0.) then true
     else if (y < Box.infy) && (dy < 0.) then true
     else false
 
-  let rebond_y y dy = 
-    if contact_y y dy then (-.dy) else dy
+    let rebond_x x dx = 
+      if contact_x x dx then (-.dx) else dx
+  
+    let rebond_y y dy = 
+      if contact_y y dy then (-.dy) else dy
+  
+
+
+  let rebond (x,y) (dx,dy) blist (mouse_x, mouse_dx) = 
+
+    let bx, by = List.hd blist in
+
+  let res = is_colliding ((x,y), BalleInit.radius) ((bx, by), (float_of_int TailleBriqueInit.width, float_of_int TailleBriqueInit.height)) (dx,dy) in
+  
+    if (y +. BalleInit.radius -. (float_of_int RaquetteInit.ypos) < 2.) && (x >= (float_of_int mouse_x) && x <= (float_of_int mouse_x) +. (float_of_int RaquetteInit.width)) then
+  
+      (dx +. mouse_dx,-.dy)
+
+    else 
+      match res with
+        |(0.0,0.0) -> (rebond_x x dx, rebond_y y dy)
+        |(1.0,0.0) |(-1.0,0.0) -> (-.dx,dy)
+        |(0.0,1.0) |(0.0,-1.0) -> (dx,-.dy)
+        |_ -> failwith "pas possible"
+        
+
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
 end
             
 
