@@ -91,9 +91,9 @@ fun tree coord_balle ->
 		|Node (limites, br_no, br_ne, br_se, br_so) ->
 			match placement coord_balle limites with
 				|true,true   -> find_tree br_no coord_balle
-				|true,false  -> find_tree br_ne coord_balle
-				|false,true  -> find_tree br_so coord_balle
-				|false,false -> find_tree br_se coord_balle
+				|true,false  -> find_tree br_se coord_balle
+				|false,true  -> find_tree br_ne coord_balle
+				|false,false -> find_tree br_so coord_balle
 
 let rec appartient : coord -> coord list -> bool =
 fun coord_test list_test ->
