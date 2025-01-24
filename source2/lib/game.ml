@@ -48,7 +48,7 @@ let balle_update : raquette -> balle -> quadtree -> balle Flux.t =
         match is_brique_aux with 
         | [] -> 0
         | briquecoord::q ->  let(a,b) = is_colliding ((x,y), BalleInit.radius) (briquecoord, ((float_of_int TailleBriqueInit.width), (float_of_int TailleBriqueInit.height))) (dx,dy) in
-                            print_endline(string_of_float a);print_endline(string_of_float b);Unix.sleepf(2.);
+                            (* print_endline(string_of_float a);print_endline(string_of_float b);Unix.sleepf(2.); *)
                             if (a,b) <> (0.0,0.0) then 1 + aux q else aux q
       in
 
