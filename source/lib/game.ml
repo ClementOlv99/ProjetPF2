@@ -14,9 +14,7 @@ let game_init liste_brique =
 
   let balle = ((Box.supx/.2., Box.supy/.2.), (0., 0.)) in
 
-  let x, _ = Graphics.mouse_pos () in
-
-  let raquette = (x, 0) in  
+  let raquette = (0., 0.) in  
 
   let score = 0, 3 in
 
@@ -63,7 +61,7 @@ let balle_update : raquette -> balle -> quadtree -> balle Flux.t =
         let v = Flux.map (fun (vx, vy) -> (vx +. dx, vy +. dy)) (integre Data.dt a) in
         let p = Flux.map (fun (px, py) -> (px +. x, py +. y)) (integre Data.dt v) in
 
-        Flux.unless (Flux.unless (Flux.map2 (fun pn vn -> (pn, vn)) p v) (fun ((x,y),(dx,dy)) -> (collision (x,y) (dx,dy) = 1) || Collision.contact_x x dx || Collision.contact_y y dy) (fun ((x,y), (dx, dy)) -> run_collision ((x, y), (Collision.rebond_x x dx, Collision.rebond_y y dy)))) (fun ((x,y),(dx,dy)) -> collision (x,y) (dx,dy) = 2) (fun ((x,y),(dx,dy)) -> run ((x,y), (-.dx, -.dy)))
+        Flux.unless (Flux.unless (Flux.map2 (fun pn vn -> (pn, vn)) p v) (fun ((x,y),(dx,dy)) -> (collision (x,y) (dx,dy) = 1) || Collision.contact_x x dx || Collision.contact_y y dy) (fun ((x,y), (dx, dy)) -> run_collision ((x, y), (Collision.rebond_x x dx, Collision.rebond_y y dy)))) (fun ((x,y),(dx,dy)) -> collision (x,y) (dx,dy) = 2) (fun ((x,y),(dx,dy)) -> run_no_collision ((x,y), (-.dx, -.dy)))
 
         
     and run_collision : balle -> balle Flux.t =
@@ -72,10 +70,19 @@ let balle_update : raquette -> balle -> quadtree -> balle Flux.t =
         let a = Flux.constant (0.0, -.g) in
 
         match (is_colliding ((x,y), BalleInit.radius) ((x,y), (float_of_int TailleBriqueInit.width, float_of_int TailleBriqueInit.height)) (dx, dy)) with
-          | (-1.0,0.0) | (1.0,0.0) -> run ((x,y), (-.dx, dy))
-          | (0.0,-1.0) | (0.0,1.0) -> run ((x,y), (dx, -.dy))
-          | (0.0,0.0) -> run ((x,y), (dx, dy))
+          | (-1.0,0.0) | (1.0,0.0) -> run_no_collision ((x,y), (-.dx, dy))
+          | (0.0,-1.0) | (0.0,1.0) -> run_no_collision ((x,y), (dx, -.dy))
+          | (0.0,0.0) -> run_no_collision ((x,y), (dx, dy))
       in
+
+    and run_no_collision : balle -> balle Flux.t =
+      fun ((x,y), (dx, dy)) ->
+
+        let a = Flux.constant (0.0, -.g) in
+        let v = Flux.map (fun (vx, vy) -> (vx +. dx, vy +. dy)) (integre Data.dt a) in
+        let p = Flux.map (fun (px, py) -> (px +. x, py +. y)) (integre Data.dt v) in
+
+        Flux.map2 (fun pn vn -> (pn, vn)) p v
 
     run ((x,y), (dx, dy))
 
