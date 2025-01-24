@@ -93,6 +93,31 @@ fun tree coord_balle ->
 				|false,true  -> find_tree br_so coord_balle
 				|false,false -> find_tree br_se coord_balle
 
+let rec appartient : coord -> coord list -> bool =
+fun coord_test list_test ->
+	match list_test with
+		|[]     -> false
+		|(t::q) -> if equal t coord_test then true else appartient coord_test q
+
+let find_briques : quadtree -> (coord * (float * float)) -> coord list =
+fun tree balle ->
+	let rec aux_briq : quadtree -> coord list -> coord list =
+	fun tree coord_pred ->
+		match coord_pred with
+			|[]     -> []
+			|(t::q) ->
+				(match find_tree tree t with
+					|None     -> aux_briq tree q
+					|Some(co) -> co::(aux_briq tree q))
+	in
+	let rec clean_doublon : coord list -> coord list -> coord list=
+	fun list_propre list_sale ->
+		match list_sale with
+			|[]     -> list_propre
+			|(t::q) -> if appartient t list_propre then clean_doublon list_propre q else clean_doublon (t::list_propre) q
+	in
+		clean_doublon [] (aux_briq tree (predict RAYON balle ))
+
 let insert_tree : quadtree -> coord -> quadtree =
 fun tree coord_new_br ->
 	let rec aux : quadtree -> coord -> quadtree =
@@ -172,15 +197,13 @@ fun tree briques ->
 
 
 let rec draw_briques : quadtree -> int -> int -> unit = 
-  fun tree width height ->
-    match tree with
-      | Leaf (_,co) -> 
-        ( match co with
-          	| None -> ()
-          	| Some (x1,y1) ->  Graphics.draw_rect (int_of_float x1) (int_of_float y1) width height;
-                        			 Graphics.set_color Graphics.blue;
-                        			 Graphics.fill_rect (int_of_float x1) (int_of_float y1) width height
-						)
+fun tree width height ->
+	match tree with
+		|Leaf (_,co) -> (match co with
+			| None -> ()
+			| Some (x1,y1) -> 	Graphics.draw_rect (int_of_float x1) (int_of_float y1) width height;
+								Graphics.set_color Graphics.blue;
+								Graphics.fill_rect (int_of_float x1) (int_of_float y1) width height)
       | Node (_,t1,t2,t3,t4) ->  draw_briques t1 width height;
                                  draw_briques t2 width height;
                                  draw_briques t3 width height;

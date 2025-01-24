@@ -68,6 +68,20 @@ val find_tree : quadtree -> coord -> coord option
 		- Some (coord) les coordonnées de la brique incriminée sinon.
 *)
 
+val find_briques : quadtree -> (coord * (float * float)) -> coord list
+(**
+	fonction de recherche des briques à portées d'une balle (à priori les briques les plus proches des trois points de la projection de la balle.)
+
+	- find_briques : quadtree -> coord list -> coord list
+
+	- paramètre(s) :
+		- le QuadTree representant le niveau.
+		- un coord representant la position de la balle et un couple de float representant la vitesse de la balle.
+
+	- résultat :
+		- Une liste des briques potentiellement à portées.
+*)
+
 val purge_tree : quadtree -> coord list -> quadtree
 (**
 	fonction de retrait d'une liste de briques d'un QuadTree.
