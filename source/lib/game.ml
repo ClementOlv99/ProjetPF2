@@ -60,22 +60,21 @@ let balle_update : raquette Flux.t -> raquette -> balle -> quadtree -> balle Flu
       fun ((x,y), (dx, dy)) ->
         
         let a = Flux.constant (0.0, -.g) in
-        let v = Flux.map (fun (vx, vy) -> (vx +. dx, vy +. dy)) (integre Data.dt a) in
-        let p = Flux.map (fun (px, py) -> (px +. x, py +. y)) (integre Data.dt v) in
-        Flux.unless (Flux.map2 (fun pn vn -> (pn, vn)) p v) (fun ((x,y),(dx,dy)) -> collision (x,y) (dx,dy) || contact_x x dx || contact_y y dy) (fun ((x,y), (dx, dy)) -> run_collision ((x, y), (rebond_x x dx, rebond_y y dy)))
-      in
+        let v = Flux.map (fun (vx, vy) -> (vx +. dx, vy +. dy)) (Collision.integre Data.dt a) in
+        let p = Flux.map (fun (px, py) -> (px +. x, py +. y)) (Collision.integre Data.dt v) in
 
+        Flux.unless (Flux.unless (Flux.map2 (fun pn vn -> (pn, vn)) p v) (fun ((x,y),(dx,dy)) -> (collision (x,y) (dx,dy) = 1) || Collision.contact_x x dx || Collision.contact_y y dy) (fun ((x,y), (dx, dy)) -> run_collision ((x, y), (Collision.rebond_x x dx, Collision.rebond_y y dy)))) (fun ((x,y),(dx,dy)) -> collision (x,y) (dx,dy) = 2) (fun ((x,y),(dx,dy)) -> run ((x,y), (-.dx, -.dy)))
 
-    let run_collision : balle -> balle Flux.t =
+        
+      and run_collision : balle -> balle Flux.t =
       fun ((x,y), (dx, dy)) ->
 
         let a = Flux.constant (0.0, -.g) in
 
-        match (is_colliding ((x,y), BalleInit.radius) ((x,y), (TailleBriqueInit.width, TailleBriqueInit.height)) (dx, dy)) with
+        match (is_colliding ((x,y), BalleInit.radius) ((x,y), (float_of_int TailleBriqueInit.width, float_of_int TailleBriqueInit.height)) (dx, dy)) with
           | (-1.0,0.0) | (1.0,0.0) -> run ((x,y), (-.dx, dy))
           | (0.0,-1.0) | (0.0,1.0) -> run ((x,y), (dx, -.dy))
-
-          | (0.0,0.0) -> if contact_x x dx then run ((x,y), (-.dx, dy)) else  if contact_y y dy then run ((x,y), (dx, -.dy)) else run ((x,y), (dx, dy))
+          | (0.0,0.0) -> run ((x,y), (dx, dy))
       in
 
       run ((x,y), (dx, dy))
@@ -86,7 +85,7 @@ let balle_update : raquette Flux.t -> raquette -> balle -> quadtree -> balle Flu
 
 
 
-let score_update : score -> int -> balle -> score Flux.t = 
+let score_update : score -> balle -> score Flux.t = 
   fun (current_score, lives) ((x, y), (_, _)) ->
     if y < 0. then
       Flux.constant (current_score, lives - 1)
