@@ -80,7 +80,7 @@ let integre dt flux =
     Tick (lazy (Some (init, Flux.map2 iter acc flux)))
   in acc
 
-module Collision = struct
+module Col:Collision = struct
   let dt = Data.dt
 
   let contact_x x dx = 
