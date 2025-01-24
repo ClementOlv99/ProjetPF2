@@ -1,15 +1,16 @@
 type etat_balle = (float * float) * (float * float)
 type rect = (float * float) * (float * float)
 type ball = (float * float) * float
-val mouse : 'a
 val is_colliding :
-  ('a * 'b) * 'c -> ('d * 'e) * ('f * 'g) -> 'h * 'i -> float * float
-val integre : 'a -> 'b -> 'c
+  (float * float) * float ->
+  (float * float) * (float * float) -> float * float -> float * float
+val integre :
+  float -> (float * float) Iterator.flux -> (float * float) Iterator.flux
 module Collision :
   sig
-    val dt : 'a
-    val contact_x : 'a -> 'b -> bool
-    val rebond_x : 'a -> 'b -> 'b
-    val contact_y : 'a -> 'b -> bool
-    val rebond_y : 'a -> 'b -> 'b
+    val dt : float
+    val contact_x : float -> float -> bool
+    val rebond_x : float -> float -> float
+    val contact_y : float -> float -> bool
+    val rebond_y : float -> float -> float
   end
