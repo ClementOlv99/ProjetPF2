@@ -53,7 +53,7 @@ fun ((x_so, y_so),(x_ne, y_ne)) ->
 	(((x_ne +. x_so) /. 2.0, (y_ne +. y_so) /. 2.0), (x_ne, y_ne))
 let quadrant_se : limites -> limites =
 fun ((x_so, y_so),(x_ne, y_ne)) ->
-	((x_so, (y_ne +. y_so) /. 2.0), ((x_ne +. x_so) /. 2.0, y_ne))
+	(((x_ne +. x_so) /. 2.0, y_so), (x_ne, (y_ne +. y_so) /. 2.0))
 let quadrant_so : limites -> limites =
 fun ((x_so, y_so),(x_ne, y_ne)) ->
 	((x_so, y_so) , ((x_ne +. x_so) /. 2.0, (y_ne +. y_so) /. 2.0))
@@ -127,24 +127,35 @@ fun tree coord_new_br ->
 		match tree with
 			|Leaf (lim, None)  -> Leaf (lim, Some(coord_new_br))
 			|Leaf (lim, Some(coord_old_br)) ->
-				let new_node = Node(lim, Leaf(quadrant_no lim, None), Leaf(quadrant_ne lim, None), Leaf(quadrant_se lim, None), Leaf(quadrant_so lim, None)) in
-					aux (aux new_node coord_old_br) coord_new_br
-			|Node (lim, br_no, br_ne, br_se, br_so) ->
-				match placement coord_new_br lim with
-					|true,true   -> aux br_no coord_new_br
-					|true,false  -> aux br_ne coord_new_br
-					|false,true  -> aux br_so coord_new_br
-					|false,false -> aux br_se coord_new_br
+				if equal coord_old_br coord_new_br
+					then Leaf(lim, Some(coord_old_br))
+					else
+						let new_node = Node(lim, Leaf(quadrant_no lim, None), Leaf(quadrant_ne lim, None), Leaf(quadrant_so lim, None), Leaf(quadrant_se lim, None)) in
+						aux (aux new_node coord_old_br) coord_new_br
+			|Node (lim, br_no, br_ne, br_so, br_se) ->
+				(match placement coord_new_br lim with
+					|true,true   -> Node (lim, (aux br_no coord_new_br), br_ne, br_so, br_se)
+					|true,false  -> Node (lim, br_no, (aux br_ne coord_new_br), br_so, br_se)
+					|false,true  -> Node (lim, br_no, br_ne, (aux br_so coord_new_br), br_se)
+					|false,false -> Node (lim, br_no, br_ne, br_so,(aux br_se coord_new_br)) )
 	in
 		match find_tree tree coord_new_br with
 			|None    -> aux tree coord_new_br
-			|Some(_) -> tree
+			|Some(coord) -> if (equal coord coord_new_br) then tree else aux tree coord_new_br
 
-			let create_tree : limites -> quadtree =
-				fun lim ->
-					let (_,(x2,y2)) = lim in
-					Node(lim, Leaf(quadrant_no lim, Some((3.*. (x2 /. 4.)), (3.*. (y2 /. 4.)))), Leaf(quadrant_ne lim, Some((1.*. (x2 /. 4.)),(3.*. (y2 /. 4.)))), Leaf(quadrant_se lim, Some((3.*. (x2 /. 4.)),(1.*. (y2 /. 4.)))), Leaf(quadrant_so lim, Some((1.*. (x2 /. 4.)),(1.*. (y2 /. 4.)))))
-				
+let create_tree : limites -> quadtree =
+fun lim ->
+	let (_,(x2,y2)) = lim in
+	Node(lim, Leaf(quadrant_no lim, Some((3.*. (x2 /. 4.)), (3.*. (y2 /. 4.)))), Leaf(quadrant_ne lim, Some((1.*. (x2 /. 4.)),(3.*. (y2 /. 4.)))), Leaf(quadrant_se lim, Some((3.*. (x2 /. 4.)),(1.*. (y2 /. 4.)))), Leaf(quadrant_so lim, Some((1.*. (x2 /. 4.)),(1.*. (y2 /. 4.)))))
+(*
+let create_tree : limites -> coord list -> quadtree =
+fun lim briques ->
+	let rec aux : quadtree -> coord list -> quadtree =
+	fun tree briques -> match briques with
+		|[] -> tree
+		|(t::q) -> aux (insert_tree tree t) q
+		in aux (Leaf(lim, None)) briques
+*)
 
 (******************************************************************************)
 (*      fonction interne de nettoyage du quadtree pour eviter les             *)
@@ -197,23 +208,22 @@ fun tree briques ->
 
 
 
-		let rec draw_briques : quadtree -> int -> int -> unit = 
-			fun tree width height ->
-		
-			let rec deg_briques x y w h i = if (w>1) && (h>1) then
-				(	(Graphics.set_color (Graphics.rgb 0 0 i)) ; Graphics.fill_rect x y w h; deg_briques (x+1) (y+1) (w-2) (h-2) (i-25)) else () in
-		
-				match tree with
-					| Leaf (_,co) -> 
-						( match co with
-								| None -> ()
-								| Some (x1,y1) ->  (*Graphics.draw_rect (int_of_float x1) (int_of_float y1) width height;
-																 Graphics.set_color Graphics.blue;
-																 Graphics.fill_rect (int_of_float x1) (int_of_float y1) width height;*)
-										 deg_briques (int_of_float x1) (int_of_float y1) width height 255;
-								)
-					| Node (_,t1,t2,t3,t4) -> draw_briques t1 width height;
-																		 draw_briques t2 width height;
-																		 draw_briques t3 width height;
-																		 draw_briques t4 width height
-		
+let rec draw_briques : quadtree -> int -> int -> unit =
+fun tree width height ->
+	let rec deg_briques x y w h i = if (w>1) && (h>1) then
+	(	(Graphics.set_color (Graphics.rgb 0 0 i)) ; Graphics.fill_rect x y w h; deg_briques (x+1) (y+1) (w-2) (h-2) (i-25)) else () in
+
+	match tree with
+		| Leaf (_,co) ->
+			( match co with
+				| None -> ()
+				| Some (x1,y1) ->  (*Graphics.draw_rect (int_of_float x1) (int_of_float y1) width height;
+									 Graphics.set_color Graphics.blue;
+									 Graphics.fill_rect (int_of_float x1) (int_of_float y1) width height;*)
+									 deg_briques (int_of_float x1) (int_of_float y1) width height 255;
+			)
+		| Node (_,t1,t2,t3,t4) -> draw_briques t1 width height;
+			 draw_briques t2 width height;
+			 draw_briques t3 width height;
+			 draw_briques t4 width height
+

@@ -27,7 +27,7 @@ val predict : float -> ((float * float) * (float * float)) -> coord list
 		- les trois points de test de colisions future.
 *)
 
-val create_tree : limites -> quadtree
+val create_tree : limites (*-> coord list*) -> quadtree
 (**
 	fonction de création du QuadTree initial.
 	- signature : create_tree : coord list -> tree
@@ -97,3 +97,16 @@ val purge_tree : quadtree -> coord list -> quadtree
 *)
 
 val draw_briques : quadtree -> int -> int -> unit
+(**
+	fonction d'affichages pour dessiner à l'écran toutes les briques d'un QuadTree.
+
+	- signature : draw_briques : quadtree -> int -> int -> unit
+
+	- paramètre(s) :
+		- le QuadTree representant le niveau.
+		- la largeur d'une brique.
+		- la hauteur d'une brique.
+
+	- résultat :
+		- (). BOUUUHHHH des effets de bords  !!!!!
+*)
