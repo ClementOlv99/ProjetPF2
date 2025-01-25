@@ -16,6 +16,9 @@ let sub (x1,y1) (x2,y2) : vector =
 let scale (x,y) s : vector =
   (x *. s, y*.s)
 
+let invert v : vector =
+  (scale v (-1.0))
+
 let div (x,y) s : vector =
   (x /. s, y/.s)
 
@@ -93,7 +96,7 @@ let is_colliding balle rectangle vitesse : vector  =
     ) in
     match get_normal with
     | (0.0,0.0) -> (0.0,0.0)
-    | normal -> mirror vitesse normal
+    | normal -> mirror (invert vitesse) normal
 
 let integre dt flux =
   let init = (0., 0.) in
