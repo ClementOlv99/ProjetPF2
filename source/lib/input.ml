@@ -91,7 +91,9 @@ let is_colliding balle rectangle vitesse : vector  =
           else (* Si dedans (x) et dedans (y) *)
               (vect_to_dir vitesse)
     ) in
-    mirror vitesse get_normal
+    match get_normal with
+    | (0.0,0.0) -> (0.0,0.0)
+    | normal -> mirror vitesse normal
 
 let integre dt flux =
   let init = (0., 0.) in
