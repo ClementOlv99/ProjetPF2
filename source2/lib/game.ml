@@ -101,7 +101,7 @@ let balle_update : raquette -> balle -> quadtree -> balle Flux.t =
 
 let score_update : score -> balle -> (score Flux.t * int) = 
   fun (current_score, lives) ((x, y), (_, _)) ->
-    if y < 0. then
+    if y < 10. then
       if (lives - 1) = 0 then
         (Flux.constant (current_score, lives - 1), 0)
       else
@@ -144,10 +144,10 @@ let rec game_update : etat -> etat Flux.t =
             if (a, b) <> (0.0, 0.0) then true else aux_cond q balle
       in
 
-
+      print_endline(string_of_float (fst r));
       aux_cond briques ((nx, ny), (ndx, ndy)) 
       || 
-      ((ny -. BalleInit.radius < (float_of_int RaquetteInit.ypos +. float_of_int RaquetteInit.height)) && (ndy < 0.) && (nx >= float_of_int (fst (Graphics.mouse_pos ())) && nx <= ((float_of_int (fst (Graphics.mouse_pos ()))) +. (float_of_int RaquetteInit.width))))
+      ((ny -. BalleInit.radius < (float_of_int RaquetteInit.ypos +. float_of_int RaquetteInit.height)) && ((ny -. BalleInit.radius) > (float_of_int RaquetteInit.ypos +. float_of_int RaquetteInit.height -. 5.) && (ndy < 0.) && (nx >= float_of_int (fst (Graphics.mouse_pos ())) && nx <= ((float_of_int (fst (Graphics.mouse_pos ()))) +. (float_of_int RaquetteInit.width)))))
       ||
       Collision.contact_x nx ndx
       ||
