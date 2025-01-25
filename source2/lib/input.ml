@@ -2,12 +2,37 @@
 open Iterator
 open Init
 
+type vector = float*float
+type etat_balle  = vector*vector
+type rect = (vector) * (vector)
+type ball = (vector) * float
 
-type etat_balle  = (float*float)*(float*float)
-type rect = (float*float)*(float*float)
-type ball = (float*float)*float
+let dot (x1,y1) (x2,y2) : float =
+  ((x1 *. x2) +. (y1 *.y2))
 
+let sub (x1,y1) (x2,y2) : vector =
+  ((x1 -. x2),(y1 -.y2))
 
+let scale (x,y) s : vector =
+  (x *. s, y*.s)
+
+let invert v : vector =
+  (scale v (-1.0))
+
+let div (x,y) s : vector =
+  (x /. s, y/.s)
+
+let norm (x,y) : float =
+  (x**2.0 +. y**2.0)
+
+let proj v p : vector =
+  (scale p ((dot v p) /. (norm p)**2.0))
+
+let mirror v m : vector =
+  (sub (scale (proj v m) 2.0) v)
+
+let to_string (x,y) : string =
+  "("^(Float.to_string x)^","^(Float.to_string y)^")"
 
 
 (* À LA MÉMOIRE DE LA SOURIS *)
@@ -19,64 +44,64 @@ type ball = (float*float)*float
     () *)
 
 
+    let is_colliding balle rectangle (vx,vy) : (float*float)  =
 
-let is_colliding balle rectangle (vx,vy) : (float*float)  =
-
-  let normalise x y : (float*float) =
-    let abs = x**2.0 +. y**2.0 in
-    (x/.abs),(y/.abs)
-  and vect_to_dir (vx,vy) : (float*float) =
-    if (vx >= vy) then
-      if (vx >= 0.0)
-        then (1.0,0.0)
-        else (-1.0,0.0)
-    else
-      if (vy >= 0.0)
-        then (0.0,1.0)
-        else (0.0,-1.0)
-  in
-  let is_point_in_ball_n px py cx cy r : (float*float) =
-    if (((px -. cx)**2.0) +. (( py -. cy)**2.0 ) <= r**2.0) 
-      then (normalise (cx -. px) (cy -. py))
-      else (0.0,0.0)
-  and is_point_in_rect px py rx ry rtx rty : bool =
-    if ((rx <= px) && (px <= (rx +. rtx)) && (ry <= py) && (py <= (ry +. rty))) then true else false
-  in
-
-  match balle with
-  | (cx,cy),r -> 
-    match rectangle with
-    | (rx,ry),(rtx,rty) ->
-      if (cx < rx) then (* Si à gauche *)
-        if (cy < ry) then (* Si à gauche et en dessous *)
-          (is_point_in_ball_n (rx) (ry) cx cy r)
-        else if (cy > ry +. rty) then (* Si à gauche et au dessus *)
-          (is_point_in_ball_n (rx) (ry +. rty) cx cy r)
-        else (* Si à gauche et dedans (y) *)
-          if (is_point_in_rect (cx+.r) cy rx ry rtx rty)
-            then (-1.0,0.0)
-            else (0.0,0.0)
-      else if (cx > rx +. rtx) then (* Si à droite *)
-        if (cy < ry) then (* Si à droite et en dessous *)
-          (is_point_in_ball_n (rx+.rtx) (ry) cx cy r)
-        else if (cy > ry +. rty) then (* Si à droite et au dessus *)
-          (is_point_in_ball_n (rx +. rtx) (ry +. rty) cx cy r)
-        else (* Si à droite et dedans (y) *)
-          if (is_point_in_rect (cx+.r) cy rx ry rtx rty)
-            then (1.0,0.0)
-            else (0.0,0.0)
-      else (* Si dedans (x) *)
-      if (cy < ry) then (* Si dedans (x) et en dessous *)
-        if (is_point_in_rect (cx) (cy+.r) rx ry rtx rty)
-          then (0.0,-1.0)
-          else (0.0,0.0)
-      else if (cy > ry +. rty) then (* Si dedans (x) et au dessus *)
-        if (is_point_in_rect (cx) (cy+.r) rx ry rtx rty)
+    let normalise x y : (float*float) =
+      let abs = x**2.0 +. y**2.0 in
+      (x/.abs),(y/.abs)
+    and vect_to_dir (vx,vy) : (float*float) =
+      if (vx >= vy) then
+        if (vx >= 0.0)
+          then (1.0,0.0)
+          else (-1.0,0.0)
+      else
+        if (vy >= 0.0)
           then (0.0,1.0)
-          else (0.0,0.0)
-        else (* Si dedans (x) et dedans (y) *)
-            (vect_to_dir (vx,vy))
-
+          else (0.0,-1.0)
+    in
+    let is_point_in_ball_n px py cx cy r : (float*float) =
+      if (((px -. cx)**2.0) +. (( py -. cy)**2.0 ) <= r**2.0) 
+        then (normalise (cx -. px) (cy -. py))
+        else (0.0,0.0)
+    and is_point_in_rect px py rx ry rtx rty : bool =
+      if ((rx <= px) && (px <= (rx +. rtx)) && (ry <= py) && (py <= (ry +. rty))) then true else false
+    in
+  
+    match balle with
+    | (cx,cy),r -> 
+      match rectangle with
+      | (rx,ry),(rtx,rty) ->
+        if (cx < rx) then (* Si à gauche *)
+          if (cy < ry) then (* Si à gauche et en dessous *)
+            (is_point_in_ball_n (rx) (ry) cx cy r)
+          else if (cy > ry +. rty) then (* Si à gauche et au dessus *)
+            (is_point_in_ball_n (rx) (ry +. rty) cx cy r)
+          else (* Si à gauche et dedans (y) *)
+            if (is_point_in_rect (cx+.r) cy rx ry rtx rty)
+              then (-1.0,0.0)
+              else (0.0,0.0)
+        else if (cx > rx +. rtx) then (* Si à droite *)
+          if (cy < ry) then (* Si à droite et en dessous *)
+            (is_point_in_ball_n (rx+.rtx) (ry) cx cy r)
+          else if (cy > ry +. rty) then (* Si à droite et au dessus *)
+            (is_point_in_ball_n (rx +. rtx) (ry +. rty) cx cy r)
+          else (* Si à droite et dedans (y) *)
+            if (is_point_in_rect (cx+.r) cy rx ry rtx rty)
+              then (1.0,0.0)
+              else (0.0,0.0)
+        else (* Si dedans (x) *)
+        if (cy < ry) then (* Si dedans (x) et en dessous *)
+          if (is_point_in_rect (cx) (cy+.r) rx ry rtx rty)
+            then (0.0,-1.0)
+            else (0.0,0.0)
+        else if (cy > ry +. rty) then (* Si dedans (x) et au dessus *)
+          if (is_point_in_rect (cx) (cy+.r) rx ry rtx rty)
+            then (0.0,1.0)
+            else (0.0,0.0)
+          else (* Si dedans (x) et dedans (y) *)
+              (vect_to_dir (vx,vy))
+  
+      
 let integre dt flux =
   let init = (0., 0.) in
   let iter (acc1, acc2) (flux1, flux2) =
@@ -109,22 +134,32 @@ module Collision = struct
 
 
   let rebond (x,y) (dx,dy) blist (mouse_x, mouse_dx) = 
-
-    let bx, by = List.hd blist in
     
     
     
-    if (y -. BalleInit.radius < ((float_of_int RaquetteInit.ypos +. float_of_int RaquetteInit.height))) (*&& (dy < 0.)) && ((x >= (mouse_x)) && x <= (mouse_x +. float_of_int RaquetteInit.width)) *) then
+    if (y -. BalleInit.radius < ((float_of_int RaquetteInit.ypos +. float_of_int RaquetteInit.height))) && (dy < 0.) && ((x >= (float_of_int ( fst (Graphics.mouse_pos ())))) && x <= (float_of_int ( fst (Graphics.mouse_pos ())) +. float_of_int RaquetteInit.width))  then  
       
       
-      (dx +. mouse_dx , -.dy)
+      ((x,y),(dx +. mouse_dx , -.dy))
 
     else 
-      match is_colliding ((x,y), BalleInit.radius) ((bx, by), (float_of_int TailleBriqueInit.width, float_of_int TailleBriqueInit.height)) (dx,dy) with
-        |(0.0,0.0) -> (rebond_x x dx, rebond_y y dy)
-        |(1.0,0.0) |(-1.0,0.0) -> (-.dx,dy)
-        |(0.0,1.0) |(0.0,-1.0) -> (dx,-.dy)
-        |_ -> failwith "pas possible"
+      let rec aux2 (x,y) (dx,dy) l = 
+        match l with
+        | [] -> ((x,y),(dx,dy))
+        | (bx,by)::q -> match is_colliding ((x,y), BalleInit.radius) ((bx, by), (float_of_int TailleBriqueInit.width, float_of_int TailleBriqueInit.height)) (dx,dy) with
+                        | (0.0,0.0) -> aux2 (x,y) (rebond_x x dx, rebond_y y dy) q
+                        | (1.0, 0.0) -> aux2 (x +. 1. +. float_of_int TailleBriqueInit.width,y) (-.dx, dy) q
+                        | (-1.0, 0.0) -> aux2 (x -. 1., y) (-.dx, dy) q
+                        | (0.0, 1.0) -> aux2 (x, y +. 1. +. float_of_int TailleBriqueInit.height) (dx, -.dy) q
+                        | (0.0, -1.0) -> aux2 (x,y -. 1.) (dx, -.dy) q
+                        | (a,b) -> aux2 (x -. a *. dt,y -. b *. dt) (a,b) q
+                          
+
+      in
+
+      aux2 (x,y) (dx,dy) blist
+
+      
         
 
     

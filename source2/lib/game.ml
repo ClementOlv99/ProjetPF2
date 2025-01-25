@@ -12,7 +12,7 @@ type etat = balle * raquette * score * (quadtree * int)
 
 let game_init liste_brique = 
 
-  let balle = ((Box.supx/.10. +. 50., Box.supy -. 130.), (50., 0.)) in 
+  let balle = ((Box.supx/.10. +. 200., Box.supy -. 100.), (30., -50.)) in 
 
   let raquette = (0., 0.) in  
 
@@ -57,21 +57,21 @@ let balle_update : raquette -> balle -> quadtree -> balle Flux.t =
 
 
 
-    let rec run : bool -> balle -> balle Flux.t =
-      fun pastouche ((x,y), (dx, dy)) ->
+    let rec run : balle -> balle Flux.t =
+      fun ((x,y), (dx, dy)) ->
 
         let a = Flux.constant (0.0, -.g) in
         let v = Flux.map (fun (vx, vy) -> (vx +. dx, vy +. dy)) (integre Data.dt a) in
         let p = Flux.map (fun (px, py) -> (px +. x, py +. y)) (integre Data.dt v) in
-        print_endline (string_of_bool pastouche);
-        Flux.unless 
-              (Flux.unless 
-                    (Flux.map2 (fun pn vn -> (pn, vn)) p v) (fun ((x,y),(dx,dy)) -> ((collision (x,y) (dx,dy) = 1) && pastouche)|| Collision.contact_x x dx || Collision.contact_y y dy || ((y -. BalleInit.radius < (float_of_int RaquetteInit.ypos +. float_of_int RaquetteInit.height)) && (dy < 0.))) 
-                          (fun ((x,y), (dx, dy)) -> run false ((x, y), (Collision.rebond (x,y) (dx,dy) (find_briques quadtreeB ((x,y),(dx,dy))) (mouse_x, mouse_dx))))) (fun ((x,y),(dx,dy)) -> collision (x,y) (dx,dy) = 2) (fun ((x,y),(dx,dy)) -> run true ((x,y), (-.dx, -.dy)))
+        
 
+        Flux.unless 
+          (Flux.map2 (fun pn vn -> (pn,vn)) p v) 
+            (fun ((x,y), (dx,dy)) -> ((collision (x,y) (dx,dy) <> 0))|| Collision.contact_x x dx || Collision.contact_y y dy || ((y -. BalleInit.radius < (float_of_int RaquetteInit.ypos +. float_of_int RaquetteInit.height)) && (dy < 0.) && (x >= float_of_int (fst (Graphics.mouse_pos ())) && x <= ((float_of_int (fst (Graphics.mouse_pos ()))) +. (float_of_int RaquetteInit.width))))) 
+              (fun ((x,y), (dx, dy)) -> run (Collision.rebond (x,y) (dx,dy) (find_briques quadtreeB ((x,y),(dx,dy))) (float_of_int (fst (Graphics.mouse_pos ())), mouse_dx)))
       in
 
-    run true ((x,y), (dx, dy))
+    run  ((x,y), (dx, dy))
 
     
           
