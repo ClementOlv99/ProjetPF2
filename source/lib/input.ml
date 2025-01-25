@@ -109,7 +109,9 @@ let is_colliding balle rectangle vitesse : vector  =
     ) in
     match get_normal with
     | (0.0,0.0) -> (0.0,0.0)
-    | normal -> (
+    | normal ->
+      if ((dot normal vitesse) <= 0.0) then 
+      (
         print_endline("Normal is : "^(to_string normal)^", length : "^(Float.to_string (norm normal)));
         print_endline("Old speed is : "^(to_string (vitesse))^", length : "^(Float.to_string (norm vitesse)));
         let new_speed = mirror (invert vitesse) normal in
@@ -117,7 +119,10 @@ let is_colliding balle rectangle vitesse : vector  =
           print_endline("New speed is : "^(to_string new_speed)^", length : "^(Float.to_string (norm new_speed)));
           new_speed
         )
-      
+      ) else
+      (
+        print_endline("Collision detected but culled.");
+        (0.0,0.0)
       )
 
 let integre dt flux =
