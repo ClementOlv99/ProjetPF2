@@ -2,13 +2,31 @@
 open Iterator
 open Init
 
+type vector = float*float
+type etat_balle  = vector*vector
+type rect = (vector) * (vector)
+type ball = (vector) * float
 
-type etat_balle  = (float*float)*(float*float)
-type rect = (float*float)*(float*float)
-type ball = (float*float)*float
+let dot (x1,y1) (x2,y2) : float =
+  ((x1 *. x2) +. (y1 *.y2))
 
+let sub (x1,y1) (x2,y2) : vector =
+  ((x1 -. x2),(y1 -.y2))
 
+let scale (x,y) s : vector =
+  (x *. s, y*.s)
 
+let div (x,y) s : vector =
+  (x /. s, y/.s)
+
+let norm (x,y) : float =
+  (x**2.0 +. y**2.0)
+
+let proj v p : vector =
+  (scale p ((dot v p) /. (norm p)**2.0))
+
+let mirror v m : vector =
+  (sub (scale (proj v m) 2.0) v)
 
 (* À LA MÉMOIRE DE LA SOURIS *)
 (* let mouse =
@@ -19,13 +37,12 @@ type ball = (float*float)*float
     () *)
 
 
+let is_colliding balle rectangle vitesse : vector  =
 
-let is_colliding balle rectangle (vx,vy) : (float*float)  =
-
-  let normalise x y : (float*float) =
+  let normalise x y : vector =
     let abs = x**2.0 +. y**2.0 in
     (x/.abs),(y/.abs)
-  and vect_to_dir (vx,vy) : (float*float) =
+  and vect_to_dir (vx,vy) : vector =
     if (vx >= vy) then
       if (vx >= 0.0)
         then (1.0,0.0)
@@ -35,7 +52,7 @@ let is_colliding balle rectangle (vx,vy) : (float*float)  =
         then (0.0,1.0)
         else (0.0,-1.0)
   in
-  let is_point_in_ball_n px py cx cy r : (float*float) =
+  let is_point_in_ball_n px py cx cy r : vector =
     if (((px -. cx)**2.0) +. (( py -. cy)**2.0 ) <= r**2.0) 
       then (normalise (cx -. px) (cy -. py))
       else (0.0,0.0)
@@ -43,35 +60,38 @@ let is_colliding balle rectangle (vx,vy) : (float*float)  =
     if ((rx <= px) && (px <= (rx +. rtx)) && (ry <= py) && (py <= (ry +. rty))) then true else false
   in
 
-  match balle with
-  | (cx,cy),r -> 
-    match rectangle with
-    | (rx,ry),(rtx,rty) ->
-      if (cx < rx) then (* Si à gauche *)
-        if (cy < ry) then (* Si à gauche et en dessous *)
-          (is_point_in_ball_n (rx) (ry) cx cy r)
-        else if (cy > ry +. rty) then (* Si à gauche et au dessus *)
-          (is_point_in_ball_n (rx) (ry +. rty) cx cy r)
-        else (* Si à gauche et dedans (y) *)
-          if (is_point_in_rect (cx+.r) cy rx ry rtx rty)
-            then (-1.0,0.0)
-            else (0.0,0.0)
-      else if (cx > rx +. rtx) then (* Si à droite *)
-        if (cy < ry) then (* Si à droite et en dessous *)
-          (is_point_in_ball_n (rx+.rtx) (ry) cx cy r)
-        else if (cy > ry +. rty) then (* Si à droite et au dessus *)
-          (is_point_in_ball_n (rx +. rtx) (ry +. rty) cx cy r)
-        else (* Si à droite et dedans (y) *)
-          if (is_point_in_rect (cx+.r) cy rx ry rtx rty)
-            then (1.0,0.0)
-            else (0.0,0.0)
-      else (* Si dedans (x) *)
-        if (cy < ry) then (* Si dedans (x) et en dessous *)
-          (0.0,-1.0)
-        else if (cy > ry +. rty) then (* Si dedans (x) et au dessus *)
-          (0.0,1.0)
-        else (* Si dedans (x) et dedans (y) *)
-            (vect_to_dir (vx,vy))
+  let get_normal : vector =
+    (match balle with
+    | (cx,cy),r -> 
+      match rectangle with
+      | (rx,ry),(rtx,rty) ->
+        if (cx < rx) then (* Si à gauche *)
+          if (cy < ry) then (* Si à gauche et en dessous *)
+            (is_point_in_ball_n (rx) (ry) cx cy r)
+          else if (cy > ry +. rty) then (* Si à gauche et au dessus *)
+            (is_point_in_ball_n (rx) (ry +. rty) cx cy r)
+          else (* Si à gauche et dedans (y) *)
+            if (is_point_in_rect (cx+.r) cy rx ry rtx rty)
+              then (-1.0,0.0)
+              else (0.0,0.0)
+        else if (cx > rx +. rtx) then (* Si à droite *)
+          if (cy < ry) then (* Si à droite et en dessous *)
+            (is_point_in_ball_n (rx+.rtx) (ry) cx cy r)
+          else if (cy > ry +. rty) then (* Si à droite et au dessus *)
+            (is_point_in_ball_n (rx +. rtx) (ry +. rty) cx cy r)
+          else (* Si à droite et dedans (y) *)
+            if (is_point_in_rect (cx+.r) cy rx ry rtx rty)
+              then (1.0,0.0)
+              else (0.0,0.0)
+        else (* Si dedans (x) *)
+          if (cy < ry) then (* Si dedans (x) et en dessous *)
+            (0.0,-1.0)
+          else if (cy > ry +. rty) then (* Si dedans (x) et au dessus *)
+            (0.0,1.0)
+          else (* Si dedans (x) et dedans (y) *)
+              (vect_to_dir vitesse)
+    ) in
+    mirror vitesse get_normal
 
 let integre dt flux =
   let init = (0., 0.) in
