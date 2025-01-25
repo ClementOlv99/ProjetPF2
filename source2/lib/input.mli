@@ -1,10 +1,9 @@
-
-type vector = float*float
-type etat_balle  = vector*vector
-type rect = (vector) * (vector)
-type ball = (vector) * float
+type etat_balle = (float * float) * (float * float)
+type rect = (float * float) * (float * float)
+type ball = (float * float) * float
 val is_colliding :
-  ball -> rect -> vector -> vector
+  (float * float) * float ->
+  (float * float) * (float * float) -> float * float -> float * float
 val integre :
   float -> (float * float) Iterator.flux -> (float * float) Iterator.flux
 module Collision :
@@ -16,5 +15,5 @@ module Collision :
     val rebond_y : float -> float -> float
     val rebond :
       float * float ->
-      float * float -> (float * float) list -> int * float -> float * float
+      float * float -> (float * float) list -> float * float -> float * float
   end

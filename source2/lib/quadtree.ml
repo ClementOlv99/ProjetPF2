@@ -1,3 +1,5 @@
+open Init
+
 type coord = float * float
 
 (* coordonnées des coins inférieur gauche et supérieur droit d'une case du quadtree *)
@@ -89,9 +91,34 @@ fun tree coord_balle ->
 		|Node (limites, br_no, br_ne, br_se, br_so) ->
 			match placement coord_balle limites with
 				|true,true   -> find_tree br_no coord_balle
-				|true,false  -> find_tree br_ne coord_balle
-				|false,true  -> find_tree br_so coord_balle
-				|false,false -> find_tree br_se coord_balle
+				|true,false  -> find_tree br_se coord_balle
+				|false,true  -> find_tree br_ne coord_balle
+				|false,false -> find_tree br_so coord_balle
+
+let rec appartient : coord -> coord list -> bool =
+fun coord_test list_test ->
+	match list_test with
+		|[]     -> false
+		|(t::q) -> if equal t coord_test then true else appartient coord_test q
+
+let find_briques : quadtree -> (coord * (float * float)) -> coord list =
+fun tree balle ->
+	let rec aux_briq : quadtree -> coord list -> coord list =
+	fun tree coord_pred ->
+		match coord_pred with
+			|[]     -> []
+			|(t::q) ->
+				(match find_tree tree t with
+					|None     -> aux_briq tree q
+					|Some(co) -> co::(aux_briq tree q))
+	in
+	let rec clean_doublon : coord list -> coord list -> coord list=
+	fun list_propre list_sale ->
+		match list_sale with
+			|[]     -> list_propre
+			|(t::q) -> if appartient t list_propre then clean_doublon list_propre q else clean_doublon (t::list_propre) q
+	in
+		clean_doublon [] (aux_briq tree (predict BalleInit.radius balle ))
 
 let insert_tree : quadtree -> coord -> quadtree =
 fun tree coord_new_br ->
@@ -113,13 +140,11 @@ fun tree coord_new_br ->
 			|None    -> aux tree coord_new_br
 			|Some(_) -> tree
 
-let create_tree : limites -> coord list -> quadtree =
-fun lim briques ->
-	let rec aux : quadtree -> coord list -> quadtree =
-	fun tree briques -> match briques with
-		|[] -> tree
-		|(t::q) -> aux (insert_tree tree t) q
-		in aux (Leaf(lim, None)) briques
+			let create_tree : limites -> quadtree =
+				fun lim ->
+					let (_,(x2,y2)) = lim in
+					Node(lim, Leaf(quadrant_no lim, Some((3.*. (x2 /. 4.)), (3.*. (y2 /. 4.)))), Leaf(quadrant_ne lim, Some((1.*. (x2 /. 4.)),(3.*. (y2 /. 4.)))), Leaf(quadrant_se lim, Some((3.*. (x2 /. 4.)),(1.*. (y2 /. 4.)))), Leaf(quadrant_so lim, Some((1.*. (x2 /. 4.)),(1.*. (y2 /. 4.)))))
+				
 
 (******************************************************************************)
 (*      fonction interne de nettoyage du quadtree pour eviter les             *)
@@ -171,17 +196,24 @@ fun tree briques ->
 		|(t::q) -> purge_tree (kill tree t) q
 
 
-let rec draw_briques : quadtree -> int -> int -> unit = 
-  fun tree width height ->
-    match tree with
-      | Leaf (_,co) -> 
-        ( match co with
-          	| None -> ()
-          	| Some (x1,y1) ->  Graphics.draw_rect (int_of_float x1) (int_of_float y1) width height;
-                        			 Graphics.set_color Graphics.blue;
-                        			 Graphics.fill_rect (int_of_float x1) (int_of_float y1) width height
-						)
-      | Node (_,t1,t2,t3,t4) ->  draw_briques t1 width height;
-                                 draw_briques t2 width height;
-                                 draw_briques t3 width height;
-                                 draw_briques t4 width height
+
+		let rec draw_briques : quadtree -> int -> int -> unit = 
+			fun tree width height ->
+		
+			let rec deg_briques x y w h i = if (w>1) && (h>1) then
+				(	(Graphics.set_color (Graphics.rgb 0 0 i)) ; Graphics.fill_rect x y w h; deg_briques (x+1) (y+1) (w-2) (h-2) (i-25)) else () in
+		
+				match tree with
+					| Leaf (_,co) -> 
+						( match co with
+								| None -> ()
+								| Some (x1,y1) ->  (*Graphics.draw_rect (int_of_float x1) (int_of_float y1) width height;
+																 Graphics.set_color Graphics.blue;
+																 Graphics.fill_rect (int_of_float x1) (int_of_float y1) width height;*)
+										 deg_briques (int_of_float x1) (int_of_float y1) width height 255;
+								)
+					| Node (_,t1,t2,t3,t4) -> draw_briques t1 width height;
+																		 draw_briques t2 width height;
+																		 draw_briques t3 width height;
+																		 draw_briques t4 width height
+		

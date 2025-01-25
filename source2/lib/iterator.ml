@@ -69,5 +69,4 @@ module Flux : Intf with type 'a t = 'a flux = struct
       |None -> None
       |Some(x, fs) -> uncons (if (cond x) then fflux x else cons x (unless fs cond fflux))
     ))
-
 end

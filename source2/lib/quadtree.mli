@@ -27,7 +27,7 @@ val predict : float -> ((float * float) * (float * float)) -> coord list
 		- les trois points de test de colisions future.
 *)
 
-val create_tree : limites -> coord list -> quadtree
+val create_tree : limites -> quadtree
 (**
 	fonction de création du QuadTree initial.
 	- signature : create_tree : coord list -> tree
@@ -66,6 +66,20 @@ val find_tree : quadtree -> coord -> coord option
 	- résultat :
 		- None si pas de briques à portée.
 		- Some (coord) les coordonnées de la brique incriminée sinon.
+*)
+
+val find_briques : quadtree -> (coord * (float * float)) -> coord list
+(**
+	fonction de recherche des briques à portées d'une balle (à priori les briques les plus proches des trois points de la projection de la balle.)
+
+	- find_briques : quadtree -> coord list -> coord list
+
+	- paramètre(s) :
+		- le QuadTree representant le niveau.
+		- un coord representant la position de la balle et un couple de float representant la vitesse de la balle.
+
+	- résultat :
+		- Une liste des briques potentiellement à portées.
 *)
 
 val purge_tree : quadtree -> coord list -> quadtree
