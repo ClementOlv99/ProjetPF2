@@ -31,6 +31,8 @@ let proj v p : vector =
 let mirror v m : vector =
   (sub (scale (proj v m) 2.0) v)
 
+let to_string (x,y) : string =
+  "("^(Float.to_string x)^","^(Float.to_string y)^")"
 (* À LA MÉMOIRE DE LA SOURIS *)
 (* let mouse =
   Flux.unfold
@@ -70,33 +72,53 @@ let is_colliding balle rectangle vitesse : vector  =
       | (rx,ry),(rtx,rty) ->
         if (cx < rx) then (* Si à gauche *)
           if (cy < ry) then (* Si à gauche et en dessous *)
-            (is_point_in_ball_n (rx) (ry) cx cy r)
+            (print_endline("à gauche et en dessous");
+            (is_point_in_ball_n (rx) (ry) cx cy r))
           else if (cy > ry +. rty) then (* Si à gauche et au dessus *)
-            (is_point_in_ball_n (rx) (ry +. rty) cx cy r)
+            (print_endline("à gauche et au dessus");
+            (is_point_in_ball_n (rx) (ry +. rty) cx cy r))
           else (* Si à gauche et dedans (y) *)
+          (print_endline("à gauche et dedans (y)");
             if (is_point_in_rect (cx+.r) cy rx ry rtx rty)
               then (-1.0,0.0)
               else (0.0,0.0)
+          )
         else if (cx > rx +. rtx) then (* Si à droite *)
           if (cy < ry) then (* Si à droite et en dessous *)
-            (is_point_in_ball_n (rx+.rtx) (ry) cx cy r)
+            (print_endline("à droite et en dessous");
+            (is_point_in_ball_n (rx+.rtx) (ry) cx cy r))
           else if (cy > ry +. rty) then (* Si à droite et au dessus *)
-            (is_point_in_ball_n (rx +. rtx) (ry +. rty) cx cy r)
+            (print_endline("à droite et au dessus");
+            (is_point_in_ball_n (rx +. rtx) (ry +. rty) cx cy r))
           else (* Si à droite et dedans (y) *)
+          (print_endline("à droite et dedans (y)");
             if (is_point_in_rect (cx+.r) cy rx ry rtx rty)
               then (1.0,0.0)
               else (0.0,0.0)
+          )
         else (* Si dedans (x) *)
           if (cy < ry) then (* Si dedans (x) et en dessous *)
-            (0.0,-1.0)
+            (print_endline("dedans (x) et en dessous");
+            (0.0,-1.0))
           else if (cy > ry +. rty) then (* Si dedans (x) et au dessus *)
-            (0.0,1.0)
+            (print_endline("dedans (x) et au dessus ");
+            (0.0,1.0))
           else (* Si dedans (x) et dedans (y) *)
-              (vect_to_dir vitesse)
+          (print_endline("dedans (x) et dedans (y)");
+              (vect_to_dir vitesse))
     ) in
     match get_normal with
     | (0.0,0.0) -> (0.0,0.0)
-    | normal -> mirror (invert vitesse) normal
+    | normal -> (
+        print_endline("Normal is : "^(to_string normal)^", length : "^(Float.to_string (norm normal)));
+        print_endline("Old speed is : "^(to_string (vitesse))^", length : "^(Float.to_string (norm vitesse)));
+        let new_speed = mirror (invert vitesse) normal in
+        (
+          print_endline("New speed is : "^(to_string new_speed)^", length : "^(Float.to_string (norm new_speed)));
+          new_speed
+        )
+      
+      )
 
 let integre dt flux =
   let init = (0., 0.) in

@@ -2,3 +2,5 @@
 source/_build/
 
 source2/_build/
+
+tests/
