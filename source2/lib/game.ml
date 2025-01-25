@@ -148,7 +148,7 @@ let rec game_update : etat -> etat Flux.t =
             if (a, b) <> (0.0, 0.0) then true else aux_cond q balle
       in
 
-      if (aux_cond briques ((nx, ny), (ndx, ndy))  || ((ny -. BalleInit.radius < (float_of_int RaquetteInit.ypos +. float_of_int RaquetteInit.height)) && (ndy < 0.) && (nx >= float_of_int (fst (Graphics.mouse_pos ())) && nx <= ((float_of_int (fst (Graphics.mouse_pos ()))) +. (float_of_int RaquetteInit.width)))  || Collision.contact_y ny ndy )) then
+      if (aux_cond briques ((nx, ny), (ndx, ndy))  || ((ny -. BalleInit.radius < (float_of_int RaquetteInit.ypos +. float_of_int RaquetteInit.height)) && (ndy < 0.) && (nx >= float_of_int (fst (Graphics.mouse_pos ())) && nx <= ((float_of_int (fst (Graphics.mouse_pos ()))) +. (float_of_int RaquetteInit.width)))  || Collision.contact_y ny ndy || Collision.contact_y ny ndy )) then
         (print_endline(string_of_bool (aux_cond briques ((nx, ny), (ndx, ndy))) );
         print_endline(string_of_bool (((ny -. BalleInit.radius < (float_of_int RaquetteInit.ypos +. float_of_int RaquetteInit.height)) && (ndy < 0.) && (nx >= float_of_int (fst (Graphics.mouse_pos ())) && nx <= ((float_of_int (fst (Graphics.mouse_pos ()))) +. (float_of_int RaquetteInit.width))))));
         print_endline(string_of_bool (Collision.contact_x nx ndx ));
