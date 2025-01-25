@@ -202,6 +202,7 @@ fun tree coord_cible ->
 
 let rec purge_tree : quadtree -> coord list -> quadtree =
 fun tree briques ->
+	print_endline "purge_tree";
 	match briques with
 		|[]     -> clean tree
 		|(t::q) -> purge_tree (kill tree t) q

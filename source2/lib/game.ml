@@ -74,7 +74,25 @@ let balle_update : raquette -> balle -> quadtree -> balle Flux.t =
     run  ((x,y), (dx, dy))
 
     
-          
+    let quadtree_update : quadtree -> balle -> (quadtree * int) Flux.t =
+      fun quadtree ((x, y), (dx, dy)) ->
+        let briques = find_briques quadtree ((x, y), (dx, dy)) in
+
+        let rec aux briques l_col =
+          match briques with
+          | [] -> l_col
+          | briquecoord::q ->
+              let (a, b) = is_colliding ((x, y), BalleInit.radius) (briquecoord, ((float_of_int TailleBriqueInit.width), (float_of_int TailleBriqueInit.height))) (dx, dy) in
+              if (a, b) <> (0.0, 0.0) then
+                aux q (briquecoord::l_col)
+              else
+                aux q l_col
+        in
+        let colliding_briques = aux briques [] in
+        
+      Flux.map
+        (fun quadtree -> (purge_tree quadtree colliding_briques , List.length colliding_briques))
+        (Flux.constant quadtree)         
         
 
 
@@ -98,15 +116,14 @@ let game_update : etat -> etat Flux.t =
     
     let (x,y), (dx,dy) = balle in 
 
-    (*let briques = find_briques quadtreeB (x,y) (dx,dy) in*)
     let nbBrique = 16 in
-    (*to do: 
-     - Détruire brique
-    *) 
+
 
     let raquette_flux = raquette_update in
 
     let (score_flux, lives) = score_update score balle in
+
+    let quadtreeB_flux = quadtree_update quadtreeB balle in
 
 
     if nbBrique = 0 || lives = 0  then
@@ -114,7 +131,7 @@ let game_update : etat -> etat Flux.t =
     else
       let map4 f i1 i2 i3 i4 = Flux.(apply (apply (apply (apply (constant f) i1) i2) i3) i4) in
 
-      map4 (fun b r s q -> (b, r, s, q)) balle_flux raquette_flux score_flux (Flux.constant (quadtreeB, nbBrique))
+      map4 (fun b r s q -> (b, r, s, q)) balle_flux raquette_flux score_flux quadtreeB_flux
 
     
 
