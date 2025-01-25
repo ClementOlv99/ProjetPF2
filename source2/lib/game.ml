@@ -76,23 +76,34 @@ let balle_update : raquette -> balle -> quadtree -> balle Flux.t =
     
     let quadtree_update : quadtree -> balle -> (quadtree * int) Flux.t =
       fun quadtree ((x, y), (dx, dy)) ->
+        print_endline(string_of_float x);
+        let a_supprimer quadtree ((x, y), (dx, dy))=
+
         let briques = find_briques quadtree ((x, y), (dx, dy)) in
 
-        let rec aux briques l_col =
-          match briques with
-          | [] -> l_col
-          | briquecoord::q ->
-              let (a, b) = is_colliding ((x, y), BalleInit.radius) (briquecoord, ((float_of_int TailleBriqueInit.width), (float_of_int TailleBriqueInit.height))) (dx, dy) in
-              if (a, b) <> (0.0, 0.0) then
-                aux q (briquecoord::l_col)
-              else
-                aux q l_col
+          let rec aux briques l_col =
+            match briques with
+            | [] -> l_col
+            | briquecoord::q ->
+                let (a, b) = is_colliding ((x, y), BalleInit.radius) (briquecoord, ((float_of_int TailleBriqueInit.width), (float_of_int TailleBriqueInit.height))) (dx, dy) in
+                if (a, b) <> (0.0, 0.0) then
+                  aux q (briquecoord::l_col)
+                else
+                  aux q l_col
+          in
+
+          let colliding_briques = aux briques [] in
+
+          if List.length colliding_briques = 0 then
+            (quadtree, List.length colliding_briques)
+          else
+            (purge_tree quadtree colliding_briques, List.length colliding_briques)
+          
         in
-        let colliding_briques = aux briques [] in
         
       Flux.map
-        (fun quadtree -> (purge_tree quadtree colliding_briques , List.length colliding_briques))
-        (Flux.constant quadtree)         
+        (fun quadtree -> (a_supprimer quadtree ((x, y), (dx, dy))))
+          (Flux.constant quadtree)         
         
 
 
@@ -109,12 +120,10 @@ let score_update : score -> balle -> (score Flux.t * int) =
         (Flux.constant (current_score, lives), 1)
 
 
-let game_update : etat -> etat Flux.t =
+let rec game_update : etat -> etat Flux.t =
   fun (balle, raquette, score, (quadtreeB, nbBrique)) ->
     
     let balle_flux = balle_update  raquette balle quadtreeB in
-    
-    let (x,y), (dx,dy) = balle in 
 
     let nbBrique = 16 in
 
@@ -125,13 +134,40 @@ let game_update : etat -> etat Flux.t =
 
     let quadtreeB_flux = quadtree_update quadtreeB balle in
 
+    let cond b q s r = 
+      
+      let (score, lives) = s in
+      
+      let (nx, ny), (ndx, ndy) = b in
 
-    if nbBrique = 0 || lives = 0  then
-      Flux.constant (balle, raquette, score, (quadtreeB, nbBrique))
-    else
-      let map4 f i1 i2 i3 i4 = Flux.(apply (apply (apply (apply (constant f) i1) i2) i3) i4) in
+      let quadtree, _ = q in
 
-      map4 (fun b r s q -> (b, r, s, q)) balle_flux raquette_flux score_flux quadtreeB_flux
+      let briques = find_briques quadtree ((nx, ny), (ndx, ndy)) in
+      ((print_endline(string_of_float nx));(print_endline(string_of_float ny)));
+
+      let rec aux_cond briques balle =
+        match briques with
+        | [] -> print_endline("cringe");false 
+        | briquecoord::q ->
+            let (a, b) = is_colliding ((fst balle), BalleInit.radius) (briquecoord, ((float_of_int TailleBriqueInit.width), (float_of_int TailleBriqueInit.height))) (snd balle) in
+            if (a, b) <> (0.0, 0.0) then true else aux_cond q balle
+      in
+
+      aux_cond briques ((nx, ny), (ndx, ndy))
+    
+    in
+
+  
+
+
+    let map4 f i1 i2 i3 i4 = Flux.(apply (apply (apply (apply (constant f) i1) i2) i3) i4) in
+
+    let flux_normal = map4 (fun b r s q -> (b, r, s, q)) balle_flux raquette_flux score_flux quadtreeB_flux in
+
+    Flux.unless flux_normal (fun (b, r, s, q) -> cond b q s r) (fun (b, r, s, q) -> game_update (b, r, s, q))
+
+
+
 
     
 
