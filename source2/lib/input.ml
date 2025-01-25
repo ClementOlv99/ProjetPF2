@@ -140,7 +140,7 @@ module Collision = struct
     if (y -. BalleInit.radius < ((float_of_int RaquetteInit.ypos +. float_of_int RaquetteInit.height))) && (dy < 0.) && ((x >= (float_of_int ( fst (Graphics.mouse_pos ())))) && x <= (float_of_int ( fst (Graphics.mouse_pos ())) +. float_of_int RaquetteInit.width))  then  
       
       
-      ((x,y),(dx +. mouse_dx , -.dy))
+      ((x,y),(dx, -.dy))
 
     else 
       let rec aux2 (x,y) (dx,dy) l = 
@@ -148,10 +148,10 @@ module Collision = struct
         | [] -> ((x,y),(dx,dy))
         | (bx,by)::q -> match is_colliding ((x,y), BalleInit.radius) ((bx, by), (float_of_int TailleBriqueInit.width, float_of_int TailleBriqueInit.height)) (dx,dy) with
                         | (0.0,0.0) -> aux2 (x,y) (rebond_x x dx, rebond_y y dy) q
-                        | (1.0, 0.0) -> aux2 (bx +. 1. +. float_of_int TailleBriqueInit.width,y) (-.dx, dy) q
-                        | (-1.0, 0.0) -> aux2 (bx -. 1., y) (-.dx, dy) q
-                        | (0.0, 1.0) -> aux2 (x, by +. 1. +. float_of_int TailleBriqueInit.height) (dx, -.dy) q
-                        | (0.0, -1.0) -> aux2 (x,by -. 1.) (dx, -.dy) q
+                        | (1.0, 0.0) -> print_endline("apagnan");aux2 (bx +. 1. +. float_of_int TailleBriqueInit.width,y) (-.dx, dy) q
+                        | (-1.0, 0.0) -> print_endline("apagnann");aux2 (bx -. 1., y) (-.dx, dy) q
+                        | (0.0, 1.0) -> print_endline("apagnannn");aux2 (x, by +. float_of_int TailleBriqueInit.height) (dx, -.dy) q
+                        | (0.0, -1.0) -> print_endline("apagnannnnn");aux2 (x,by -. 12.) (dx, -.dy) q
                         | (a,b) -> aux2 (x -. a *. dt,y -. b *. dt) (a,b) q
                           
 
