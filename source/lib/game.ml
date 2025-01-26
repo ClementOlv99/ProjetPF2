@@ -71,8 +71,8 @@ let balle_update : raquette -> balle -> quadtree -> balle Flux.t =
     run (Collision.rebond (x,y) (dx, dy) blist (mouse_x, mouse_dx))
 
     
-    let quadtree_update : quadtree -> balle -> (quadtree * int) Flux.t =
-      fun quadtree ((x, y), (dx, dy)) ->
+    let quadtree_update : (quadtree*int) -> balle -> (quadtree * int) Flux.t =
+      fun (quadtree,n) ((x, y), (dx, dy)) ->
         
         let a_supprimer quadtree ((x, y), (dx, dy))=
 
@@ -92,9 +92,9 @@ let balle_update : raquette -> balle -> quadtree -> balle Flux.t =
           let colliding_briques = aux briques [] in
 
           if List.length colliding_briques = 0 || y < 100. then
-            (quadtree, List.length colliding_briques)
+            (quadtree, n)
           else
-            (purge_tree quadtree colliding_briques, List.length colliding_briques)
+            (purge_tree quadtree colliding_briques, n-List.length colliding_briques)
           
         in
           
@@ -112,15 +112,13 @@ let score_update : score -> balle -> (score Flux.t * int) =
         (Flux.constant (current_score, lives - 1), 1)
     else
         (Flux.constant (current_score, lives), 1)
+    
 
 
 let rec game_update : etat -> etat Flux.t =
-  fun (balle, raquette, score, (quadtreeB, nbBrique)) ->
+  fun (balle, raquette, score, (quadtreeB,nbBrique)) ->
 
     let balle_flux = balle_update  raquette balle quadtreeB in
- 
-    let nbBrique = 16 in
-
 
     let raquette_update = 
       let raquette_outside x =
@@ -137,7 +135,7 @@ let rec game_update : etat -> etat Flux.t =
 
     let (score_flux, lives) = score_update score balle in
 
-    let quadtreeB_flux = quadtree_update quadtreeB balle in
+    let quadtreeB_flux = quadtree_update (quadtreeB,nbBrique) balle in
 
     let cond b q s r = 
       

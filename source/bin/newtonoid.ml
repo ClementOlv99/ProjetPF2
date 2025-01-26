@@ -19,7 +19,8 @@ let draw_state etat =
     | (b,r,s,(quadtree,n)) -> draw_briques quadtree TailleBriqueInit.width TailleBriqueInit.height;
                               draw_raquette r;
                               draw_balle b;
-                              draw_score s
+                              draw_score s;
+                              draw_nbrique n
 
 (* extrait le score courant d'un etat : *)
 let score etat : int = 1
