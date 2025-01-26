@@ -12,12 +12,15 @@ let draw_balle b =
                    Graphics.fill_circle (int_of_float x) (int_of_float y) (int_of_float BalleInit.radius)
     | _ -> ()
 
-let draw_score (s,l) =
+let draw_life l =
   Graphics.moveto 10 22;
   Graphics.set_color Graphics.green;
-  Graphics.draw_string ("score : " ^ (string_of_int s));
-  Graphics.moveto 10 35;
   Graphics.draw_string ("nombre de vie : " ^ (string_of_int l))
+
+let draw_score s =
+  Graphics.moveto 10 35;
+  Graphics.draw_string ("score : " ^ (string_of_int s))
+  
 
 let draw_nbrique n = 
   (Graphics.moveto 10 10;

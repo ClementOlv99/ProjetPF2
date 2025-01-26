@@ -103,15 +103,35 @@ let balle_update : raquette -> balle -> quadtree -> balle Flux.t =
 
 
 
-let score_update : score -> balle -> (score Flux.t * int) = 
-  fun (current_score, lives) ((x, y), (_, _)) ->
+let score_update : score -> quadtree -> balle -> score Flux.t = 
+  let live_up lives y = 
     if y < 10. then
-      if (lives - 1) = 0 then
-        (Flux.constant (current_score, lives - 1), 0)
+      (if (lives - 1) = 0 then 
+        (Graphics.close_graph();0)
       else
-        (Flux.constant (current_score, lives - 1), 1)
+        (lives -1))
     else
-        (Flux.constant (current_score, lives), 1)
+      lives
+  in
+  let destrbriqulist quadtree balle=
+  let briques = find_briques quadtree balle in
+
+    let rec aux briques l_col =
+      match briques with
+      | [] -> l_col
+      | briquecoord::q ->
+          let (a, b) = is_colliding ((fst balle), BalleInit.radius) (briquecoord, ((float_of_int TailleBriqueInit.width), (float_of_int TailleBriqueInit.height))) (snd balle) in
+          if (a, b) <> (0.0, 0.0) then
+            aux q (briquecoord::l_col)
+          else
+            aux q l_col
+      in
+      aux briques []
+  in
+  let add_score tree balle = (List.length (destrbriqulist tree balle))
+  in
+  fun (_, lives) tree ((x, y), v) ->
+        Flux.constant((add_score tree ((x, y), v), live_up lives y))
     
 
 
@@ -133,7 +153,7 @@ let rec game_update : etat -> etat Flux.t =
       print_endline "update";
       Flux.map balle_up (Flux.constant((0.,0.))) in
 
-    let (score_flux, lives) = score_update score balle in
+    let (score_flux) = score_update score quadtreeB balle in
 
     let quadtreeB_flux = quadtree_update (quadtreeB,nbBrique) balle in
 

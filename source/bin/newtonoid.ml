@@ -16,14 +16,14 @@ let graphic_format =
 
 let draw_state etat = 
   match etat with
-    | (b,r,s,(quadtree,n)) -> draw_briques quadtree TailleBriqueInit.width TailleBriqueInit.height;
+    | (b,r,(s,l),(quadtree,n)) -> draw_briques quadtree TailleBriqueInit.width TailleBriqueInit.height;
                               draw_raquette r;
                               draw_balle b;
-                              draw_score s;
+                              draw_life l;
                               draw_nbrique n
 
 (* extrait le score courant d'un etat : *)
-let score etat : int = 1
+let score etat : int = match etat with (_,_,(s,_),_) -> s
 
 let draw flux_etat =
   let rec loop flux_etat last_score =
@@ -33,6 +33,7 @@ let draw flux_etat =
       Graphics.clear_graph ();
       (* DESSIN ETAT *)
       draw_state etat;
+      draw_score last_score;
       (* FIN DESSIN ETAT *)
       Graphics.synchronize ();
       Unix.sleepf Data.dt;
