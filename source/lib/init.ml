@@ -1,5 +1,5 @@
 module Data = struct
-  let dt = 1000. /. 60. (* 60 Hz *)
+  let dt = 0.01 (* 60 Hz *)
 end
 
 module Box = struct
@@ -30,3 +30,6 @@ module TabBriquesInit = struct
   let nbBrique = 10 
 end
 
+let raquette_outside x =
+  if(x>(Box.supx +. Box.infx -. float_of_int RaquetteInit.width)) then (Box.supx +. Box.infx -. float_of_int RaquetteInit.width) 
+  else if (x<0.) then 0. else x ;

@@ -17,9 +17,9 @@ let graphic_format =
 let draw_state etat = 
   match etat with
     | (b,r,s,(quadtree,n)) -> draw_briques quadtree TailleBriqueInit.width TailleBriqueInit.height;
-                              draw_raquette r
-                              (*draw_balle b;
-                              draw_score s*)
+                              draw_raquette r;
+                              draw_balle b
+                              (*draw_score s*)
 
 (* extrait le score courant d'un etat : *)
 let score etat : int = 1
@@ -44,8 +44,8 @@ let draw flux_etat =
   Format.printf "Score final : %d@\n" score;
   Graphics.close_graph ()
 
-let a = game_init [(12,14); (14,177)]
+(*let a = game_init [(12,14); (14,177)]*)
 
-let baseetat = ( ((0.,0.),5.), 40.,0,((create_tree ((0.,0.),(10.,10.)) Nil),1))
+let baseetat = ( ((80.,80.),5.), 40.,0,((create_tree ((0.,0.),(400.,400.))),2))
 
-let () = draw (Flux.constant  baseetat)
+let () = draw (game_update (game_init []))
