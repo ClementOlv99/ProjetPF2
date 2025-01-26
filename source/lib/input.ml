@@ -151,11 +151,11 @@ module Collision = struct
       && ((x >= (mouse_x)) 
       && (x <= (mouse_x) +. float_of_int RaquetteInit.width))
     then (
-      print_endline("Boing !"); 
+      (* print_endline("Boing !");  *)
       let (rx,ry) : vector = (dx +. (clamp ((mouse_dx *. Data.rqtFrictionCoeff),-.Data.rqtMaxSpeedTransfer,Data.rqtMaxSpeedTransfer)), -.dy) in
-      print_endline("Speed was : "^(Float.to_string mouse_dx));
+      (* print_endline("Speed was : "^(Float.to_string mouse_dx));
       print_endline("old speed is : "^(to_string (dx, dy))^", de norme "^(Float.to_string (norm (dx, dy)))); 
-      print_endline("new speed is : "^(to_string (rx,ry))^", de norme "^(Float.to_string (norm (rx,ry))));
+      print_endline("new speed is : "^(to_string (rx,ry))^", de norme "^(Float.to_string (norm (rx,ry)))); *)
       ((x,y +. 1.0),(rx,ry))
 
     ) else 
@@ -166,29 +166,29 @@ module Collision = struct
                         | (0.0,0.0) -> aux2 (x,y) (rebond_x x dx, rebond_y y dy) q
                         | (1.0, 0.0) ->
                           let (vx, vy) : vector = (-.dx, dy) in
-                          print_endline("old speed is : "^(to_string (dx, dy))^", de norme "^(Float.to_string (norm (dx, dy)))); 
-                          print_endline("new speed is : "^(to_string (vx, vy))^", de norme "^(Float.to_string (norm (vx, vy))));
+                          (* print_endline("old speed is : "^(to_string (dx, dy))^", de norme "^(Float.to_string (norm (dx, dy)))); 
+                          print_endline("new speed is : "^(to_string (vx, vy))^", de norme "^(Float.to_string (norm (vx, vy)))); *)
                           aux2 (x +. vx *. dt *. 2.0,y +. vy *. dt *. 2.0)  (vx, vy) q
                         | (-1.0, 0.0) ->
                           let (vx, vy) : vector = (-.dx, dy) in
-                          print_endline("old speed is : "^(to_string (dx, dy))^", de norme "^(Float.to_string (norm (dx, dy)))); 
-                          print_endline("new speed is : "^(to_string (vx, vy))^", de norme "^(Float.to_string (norm (vx, vy))));
+                          (* print_endline("old speed is : "^(to_string (dx, dy))^", de norme "^(Float.to_string (norm (dx, dy)))); 
+                          print_endline("new speed is : "^(to_string (vx, vy))^", de norme "^(Float.to_string (norm (vx, vy)))); *)
                           aux2 (x +. vx *. dt *. 2.0,y +. vy *. dt *. 2.0)  (vx, vy) q
                         | (0.0, 1.0) ->
                           let (vx, vy) : vector = (dx, -.dy) in
-                          print_endline("old speed is : "^(to_string (dx, dy))^", de norme "^(Float.to_string (norm (dx, dy)))); 
-                          print_endline("new speed is : "^(to_string (vx, vy))^", de norme "^(Float.to_string (norm (vx, vy))));
+                          (* print_endline("old speed is : "^(to_string (dx, dy))^", de norme "^(Float.to_string (norm (dx, dy)))); 
+                          print_endline("new speed is : "^(to_string (vx, vy))^", de norme "^(Float.to_string (norm (vx, vy)))); *)
                           aux2 (x +. vx *. dt *. 2.0,y +. vy *. dt *. 2.0)  (vx, vy) q
                         | (0.0, -1.0) ->
                           let (vx, vy) : vector = (dx, -.dy) in
-                          print_endline("old speed is : "^(to_string (dx, dy))^", de norme "^(Float.to_string (norm (dx, dy)))); 
-                          print_endline("new speed is : "^(to_string (vx, vy))^", de norme "^(Float.to_string (norm (vx, vy))));
+                          (* print_endline("old speed is : "^(to_string (dx, dy))^", de norme "^(Float.to_string (norm (dx, dy)))); 
+                          print_endline("new speed is : "^(to_string (vx, vy))^", de norme "^(Float.to_string (norm (vx, vy)))); *)
                           aux2 (x +. vx *. dt *. 2.0,y +. vy *. dt *. 2.0)  (vx, vy) q
                         | (a,b) ->
                           (* print_endline("normal is : "^(to_string (a,b))^", de norme "^(Float.to_string (norm (a,b))));  *)
                           let (vx, vy) : vector = invert (mirror (dx,dy) (a,b)) in
-                          print_endline("old speed is : "^(to_string (dx, dy))^", de norme "^(Float.to_string (norm (dx, dy)))); 
-                          print_endline("new speed is : "^(to_string (vx, vy))^", de norme "^(Float.to_string (norm (vx, vy)))); 
+                          (* print_endline("old speed is : "^(to_string (dx, dy))^", de norme "^(Float.to_string (norm (dx, dy)))); 
+                          print_endline("new speed is : "^(to_string (vx, vy))^", de norme "^(Float.to_string (norm (vx, vy))));  *)
                           aux2 (x +. vx *. dt *. 2.0,y +. vy *. dt *. 2.0) (vx, vy) q
                           
 
