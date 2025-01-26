@@ -66,10 +66,10 @@ fun ((x_so, y_so),(x_ne, y_ne)) ->
 (*                  les limites de l'espace à tester                          *)
 (*   résultat     : un couple de booléen indiquant le quadrant dans lequel    *)
 (*                  l'objet doit être placé:                                  *)
-(*      |true,true   -> quadrant nord-ouest                                   *)
-(*      |true,false  -> quadrant nord-est                                     *)
-(*      |false,false -> quadrant sud-est                                      *)
-(*      |false,true  -> quadrant sud-ouest                                    *)
+(*      |true,true   -> quadrant nord-est                                     *)
+(*      |true,false  -> quadrant sud-est                                      *)
+(*      |false,true  -> quadrant nord-ouest                                   *)
+(*      |false,false -> quadrant sud-ouest                                    *)
 (******************************************************************************)
 let placement : coord -> limites -> (bool * bool) =
 fun (x_obj, y_obj) ((x_so, y_so), (x_ne, y_ne)) ->
@@ -83,16 +83,17 @@ fun r ((xb, yb), vitesse_balle) ->
 	let (pred_x, pred_y) = (xb +. (r *. dir_x)) ,(yb +. (r *. dir_y)) in
 		(pred_x +. (dir_x*.r) , pred_y +. (dir_y*.r)) ::((pred_x +. (dir_y*.r) , pred_y -. (dir_x*.r)) :: ((pred_x -. (dir_y*.r) , pred_y +. (dir_x*.r))::[]))
 
+
 let rec find_tree: quadtree -> coord -> coord option =
 fun tree coord_balle ->
 	match tree with
 		|Leaf (_, None) -> None
 		|Leaf (_, brick) -> brick
-		|Node (limites, br_no, br_ne, br_se, br_so) ->
+		|Node (limites, br_ne, br_se, br_no, br_so) ->
 			match placement coord_balle limites with
-				|true,true   -> find_tree br_no coord_balle
+				|true,true   -> find_tree br_ne coord_balle
 				|true,false  -> find_tree br_se coord_balle
-				|false,true  -> find_tree br_ne coord_balle
+				|false,true  -> find_tree br_no coord_balle
 				|false,false -> find_tree br_so coord_balle
 
 let rec appartient : coord -> coord list -> bool =
@@ -130,14 +131,14 @@ fun tree coord_new_br ->
 				if equal coord_old_br coord_new_br
 					then Leaf(lim, Some(coord_old_br))
 					else
-						let new_node = Node(lim, Leaf(quadrant_no lim, None), Leaf(quadrant_ne lim, None), Leaf(quadrant_so lim, None), Leaf(quadrant_se lim, None)) in
+						let new_node = Node(lim, Leaf(quadrant_ne lim, None), Leaf(quadrant_se lim, None), Leaf(quadrant_no lim, None), Leaf(quadrant_so lim, None)) in
 						aux (aux new_node coord_old_br) coord_new_br
-			|Node (lim, br_no, br_ne, br_so, br_se) ->
+			|Node (lim, br_ne, br_se, br_no, br_so) ->
 				(match placement coord_new_br lim with
-					|true,true   -> Node (lim, (aux br_no coord_new_br), br_ne, br_so, br_se)
-					|true,false  -> Node (lim, br_no, (aux br_ne coord_new_br), br_so, br_se)
-					|false,true  -> Node (lim, br_no, br_ne, (aux br_so coord_new_br), br_se)
-					|false,false -> Node (lim, br_no, br_ne, br_so,(aux br_se coord_new_br)) )
+					|true,true   -> Node (lim, (aux br_ne coord_new_br), br_se, br_no, br_so)
+					|true,false  -> Node (lim, br_ne, (aux br_se coord_new_br), br_no, br_so)
+					|false,true  -> Node (lim, br_ne, br_se, (aux br_no coord_new_br), br_so)
+					|false,false -> Node (lim, br_ne, br_se, br_no,(aux br_so coord_new_br)) )
 	in
 		match find_tree tree coord_new_br with
 			|None    -> aux tree coord_new_br
@@ -146,7 +147,7 @@ fun tree coord_new_br ->
 let create_tree : limites -> quadtree =
 fun lim ->
 	let (_,(x2,y2)) = lim in
-	Node(lim, Leaf(quadrant_no lim, Some((3.*. (x2 /. 4.)), (3.*. (y2 /. 4.)))), Leaf(quadrant_ne lim, Some((1.*. (x2 /. 4.)),(3.*. (y2 /. 4.)))), Leaf(quadrant_se lim, Some((3.*. (x2 /. 4.)),(1.*. (y2 /. 4.)))), Leaf(quadrant_so lim, Some((1.*. (x2 /. 4.)),(1.*. (y2 /. 4.)))))
+	Node(lim, Leaf(quadrant_ne lim, Some((3.*. (x2 /. 4.)), (3.*. (y2 /. 4.)))), Leaf(quadrant_se lim, Some((3.*. (x2 /. 4.)),(1.*. (y2 /. 4.)))), Leaf(quadrant_no lim, Some((1.*. (x2 /. 4.)),(3.*. (y2 /. 4.)))), Leaf(quadrant_so lim, Some((1.*. (x2 /. 4.)),(1.*. (y2 /. 4.)))))
 (*
 let create_tree : limites -> coord list -> quadtree =
 fun lim briques ->
@@ -178,7 +179,7 @@ fun tree ->
 		in
 	match tree with
 		|Leaf (_, _) -> tree
-		|Node (lim, br_no, br_ne, br_se, br_so) -> Node(lim, clean (clean_etage br_no), clean (clean_etage br_ne), clean (clean_etage br_se), clean (clean_etage br_so))
+		|Node (lim, br_ne, br_se, br_no, br_so) -> Node(lim, clean (clean_etage br_ne), clean (clean_etage br_se), clean (clean_etage br_no), clean (clean_etage br_so))
 
 (******************************************************************************)
 (*      fonction interne qui retire une brique d'un quadtree.                 *)
@@ -192,22 +193,19 @@ let rec kill : quadtree -> coord -> quadtree =
 fun tree coord_cible ->
 	match tree with
 		|Leaf(_, None) -> tree
-		|Leaf(lim, Some(coord)) -> if (equal coord coord_cible) then Leaf(lim, None) else tree
-		|Node (lim, br_no, br_ne, br_se, br_so) ->
+		|Leaf(lim, Some(coord)) -> if (equal coord coord_cible) then let (x,y) = coord in Leaf(lim, None) else tree
+		|Node (lim, br_ne, br_se, br_no, br_so) ->
 			match placement coord_cible lim with
-				|true,true   -> kill br_no coord_cible
-				|true,false  -> kill br_ne coord_cible
-				|false,true  -> kill br_so coord_cible
-				|false,false -> kill br_se coord_cible
+				|true,true   -> Node (lim, (kill br_ne coord_cible), br_se, br_no, br_so)
+				|true,false  -> Node (lim, br_ne, (kill br_se coord_cible), br_no, br_so)
+				|false,true  -> Node (lim, br_ne, br_se, (kill br_no coord_cible), br_so)
+				|false,false -> Node (lim, br_ne, br_se, br_no,(kill br_so coord_cible))
 
 let rec purge_tree : quadtree -> coord list -> quadtree =
 fun tree briques ->
-	print_endline "purge_tree";
 	match briques with
 		|[]     -> clean tree
 		|(t::q) -> purge_tree (kill tree t) q
-
-
 
 let rec draw_briques : quadtree -> int -> int -> unit =
 fun tree width height ->
