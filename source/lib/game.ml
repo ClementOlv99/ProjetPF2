@@ -16,10 +16,16 @@ fun cursor -> match cursor with
   |(x, y) when (x > Box.supx -. Float.of_int TailleBriqueInit.width) -> create_level(Box.infx, y +. (Float.of_int TailleBriqueInit.height))
   |(x, y)                     -> (x, y)::(create_level (x +. (Float.of_int TailleBriqueInit.width), y))
 
+let liste_brique_num i =
+  match i with
+  |1 -> create_level (Box.infx, (Box.supy +. Box.infy) /.2.0)
+  |2 -> [(100.,100.);(100.,200.);(100.,300.);(100.,400.);(100.,500.);(100.,600.);(200.,100.);(200.,200.);(200.,300.);(200.,400.);(200.,500.);(200.,600.);(300.,100.);(300.,200.);(300.,300.);(300.,400.);(300.,500.);(300.,600.);(400.,100.);(400.,200.);(400.,300.);(400.,400.);(400.,500.);(400.,600.);(500.,100.);(500.,200.);(500.,300.);(500.,400.);(500.,500.);(500.,600.);(600.,100.);(600.,200.);(600.,300.);(600.,400.);(600.,500.);(600.,600.);(700.,100.);(700.,200.);(700.,300.);(700.,400.);(700.,500.);(700.,600.);]
+  |_ -> []
+
 
 let game_init =
 
-  let liste_brique = create_level (Box.infx, (Box.supy +. Box.infy) /.2.0) in
+  let liste_brique = liste_brique_num 3 in
 
   let balle = ((Box.supx/.10. +. 200., (Float.of_int RaquetteInit.ypos) +. Box.supy /. 29.), (35., 250.)) in
 
@@ -192,7 +198,7 @@ let rec game_update : etat -> etat Flux.t =
 
       Flux.unless flux_normal (fun (b, r, s, q) -> cond b q s r) (fun (b, r, s, q) -> game_update (b, r, s, q))
     else 
-      (if(nbBrique<0) then (print_endline "vous avez gagné!") else ();
+      (if(nbBrique=0) then (print_endline "vous avez gagné!") else ();
       Flux.vide)
 
 
