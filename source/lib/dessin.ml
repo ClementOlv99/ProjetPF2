@@ -13,7 +13,12 @@ let draw_balle b =
     | _ -> ()
 
 let draw_score (s,l) =
-  Graphics.moveto 10 10;
+  Graphics.moveto 10 22;
   Graphics.set_color Graphics.green;
-  Graphics.draw_string ("score :" ^ (string_of_int s));
-  Graphics.draw_string ("nombre de vie :" ^ (string_of_int l));
+  Graphics.draw_string ("score : " ^ (string_of_int s));
+  Graphics.moveto 10 35;
+  Graphics.draw_string ("nombre de vie : " ^ (string_of_int l))
+
+let draw_nbrique n = 
+  (Graphics.moveto 10 10;
+  (Graphics.draw_string ("nombre de briques : " ^(string_of_int n))))
