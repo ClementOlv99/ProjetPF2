@@ -141,7 +141,7 @@ module Collision = struct
     
     
     
-    if (y -. BalleInit.radius < ((float_of_int RaquetteInit.ypos +. float_of_int RaquetteInit.height))) && (dy < 0.) && ((x >= (raquette_outside (float_of_int (fst (Graphics.mouse_pos ()))))) && (x <= (raquette_outside (float_of_int (fst (Graphics.mouse_pos ())))) +. float_of_int RaquetteInit.width))  then  
+    if (y -. BalleInit.radius < ((float_of_int RaquetteInit.ypos +. float_of_int RaquetteInit.height))) && (dy < 0.) && ((x >= (mouse_x)) && (x <= (mouse_x) +. float_of_int RaquetteInit.width))  then  
       
       
       ((x,y),(dx, -.dy))

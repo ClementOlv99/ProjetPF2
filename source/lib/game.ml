@@ -146,11 +146,9 @@ let rec game_update : etat -> etat Flux.t =
         else if (x<0.) then 0. else x ;
       in
       let balle_up _ =
-        let (z,v) = Graphics.mouse_pos () in
         match Graphics.mouse_pos () with
-          |(xraq,_) -> print_endline "zoo" ;(print_endline (string_of_int (z));(raquette_outside(float_of_int xraq),0.))
+          |(xraq,_) -> (raquette_outside(float_of_int xraq),0.)
       in
-      print_endline "update";
       Flux.map balle_up (Flux.constant((0.,0.))) in
 
     let (score_flux,live) = score_update score quadtreeB balle in
@@ -178,7 +176,7 @@ let rec game_update : etat -> etat Flux.t =
 
       aux_cond briques ((nx, ny), (ndx, ndy)) 
       || 
-      ((ny -. BalleInit.radius < (float_of_int RaquetteInit.ypos +. float_of_int RaquetteInit.height)) && ((ny -. BalleInit.radius) > (float_of_int RaquetteInit.ypos +. float_of_int RaquetteInit.height -. 5.) && (ndy < 0.) && (nx >= (raquette_outside (float_of_int (fst (Graphics.mouse_pos ())))) && nx <= (((raquette_outside (float_of_int (fst (Graphics.mouse_pos ()))))) +. (float_of_int RaquetteInit.width)))))
+      ((ny -. BalleInit.radius < (float_of_int RaquetteInit.ypos +. float_of_int RaquetteInit.height)) && ((ny -. BalleInit.radius) > (float_of_int RaquetteInit.ypos +. float_of_int RaquetteInit.height -. 5.) && (ndy < 0.) && (nx >= ((fst raquette))) && nx <= ((((fst raquette)) +. (float_of_int RaquetteInit.width)))))
       ||
       Collision.contact_x nx ndx
       ||
