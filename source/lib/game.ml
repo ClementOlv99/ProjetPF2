@@ -166,8 +166,8 @@ let rec game_update : etat -> etat Flux.t =
       Flux.unfold
       (fun prev_x ->
         let x, _ = Graphics.mouse_pos () in
-        let dx = ((balle_up x) -. prev_x) /. Data.dt in
-        Some ((balle_up x, dx), prev_x))
+        let dx = print_endline "x: ";print_endline (string_of_int x);print_endline (string_of_float prev_x);((balle_up x) -. prev_x) /. Data.dt in
+        print_endline (string_of_float dx);Some ((balle_up x, dx), balle_up x))
         0.0
        in
 
