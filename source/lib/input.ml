@@ -35,9 +35,16 @@ let normalise (x,y) : vector =
   let abs = norm (x,y) in
   (x/.abs,y/.abs)
 
+let rotated (x,y) a : vector =
+  let angle : float = a *. (Float.pi /. 180.0) in
+  ((Float.cos angle)*.x -. (Float.sin angle)*.y,
+  (Float.sin angle)*.x +. (Float.cos angle)*.y)
+
 let to_string (x,y) : string =
   "("^(Float.to_string x)^","^(Float.to_string y)^")"
 
+let clamp x a b : float =
+  (Float.max a (Float.min b x))
 
 (* À LA MÉMOIRE DE LA SOURIS *)
 (* let mouse =
@@ -139,14 +146,23 @@ module Collision = struct
 
   let rebond (x,y) (dx,dy) blist (mouse_x, mouse_dx) = 
     
-    
-    
-    if (y -. BalleInit.radius < ((float_of_int RaquetteInit.ypos +. float_of_int RaquetteInit.height))) && (dy < 0.) && ((x >= (mouse_x)) && (x <= (mouse_x) +. float_of_int RaquetteInit.width))  then  
-      
-      
-      ((x,y),(dx, -.dy))
+    if (y -. BalleInit.radius < ((float_of_int RaquetteInit.ypos +. float_of_int RaquetteInit.height))) 
+      && (dy < 0.) 
+      && ((x >= (mouse_x)) 
+      && (x <= (mouse_x) +. float_of_int RaquetteInit.width))
+    then (
+      print_endline("Boing !"); 
+      let pos_n : float = (1.0) in (* Position normalisée de la balle : -1.0 si sur la gauche de la raquette, 1.0 si sur la droite, 0.0 si on touche le centre*)
+      let rot : vector = rotated (0.0, 1.0) ((pos_n *. -1.0) *. Data.raquetteAngle /. 2.0) in
+      let n_s : vector = invert (mirror (dx,dy) rot) in
+      print_endline("Pos_n : "^(Float.to_string pos_n)); 
+      print_endline("Speed was : "^(Float.to_string mouse_dx)); 
+      print_endline("rot is : "^(to_string rot)^", de norme "^(Float.to_string (norm rot))); 
+      print_endline("old speed is : "^(to_string (dx, dy))^", de norme "^(Float.to_string (norm (dx, dy)))); 
+      print_endline("new speed is : "^(to_string n_s)^", de norme "^(Float.to_string (norm n_s)));
+      ((x,y +. 1.0),n_s)
 
-    else 
+    ) else 
       let rec aux2 (x,y) (dx,dy) l = 
         match l with
         | [] -> ((x,y),(rebond_x x dx, rebond_y y dy))

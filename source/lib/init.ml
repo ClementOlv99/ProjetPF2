@@ -5,6 +5,12 @@ module Data = struct
   let gravity = 40.
   (** Gravité, en m.s⁻² 
       *)
+  let raquetteAngle = 45.
+  (** Angle maximal de la raquette aux extrémités 
+      *)
+  let angleSpeedThreshold = 45.
+  (** Vitesse à partir de laquelle la raquette envoie la balle à l'angle maximal 
+      *)
 end
 
 module Box = struct
