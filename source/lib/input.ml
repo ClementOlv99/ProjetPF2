@@ -43,7 +43,7 @@ let rotated (x,y) a : vector =
 let to_string (x,y) : string =
   "("^(Float.to_string x)^","^(Float.to_string y)^")"
 
-let clamp x a b : float =
+let clamp (x,a,b) : float =
   (Float.max a (Float.min b x))
 
 (* À LA MÉMOIRE DE LA SOURIS *)
@@ -152,7 +152,7 @@ module Collision = struct
       && (x <= (mouse_x) +. float_of_int RaquetteInit.width))
     then (
       print_endline("Boing !"); 
-      let (rx,ry) : vector = (dx +. mouse_dx *. Data.rqtFrictionCoeff, -.dy) in
+      let (rx,ry) : vector = (dx +. (clamp ((mouse_dx *. Data.rqtFrictionCoeff),-.Data.rqtMaxSpeedTransfer,Data.rqtMaxSpeedTransfer)), -.dy) in
       print_endline("Speed was : "^(Float.to_string mouse_dx));
       print_endline("old speed is : "^(to_string (dx, dy))^", de norme "^(Float.to_string (norm (dx, dy)))); 
       print_endline("new speed is : "^(to_string (rx,ry))^", de norme "^(Float.to_string (norm (rx,ry))));

@@ -6,6 +6,7 @@ module Data = struct
   (** Gravité, en m.s⁻² 
       *)
   let rqtFrictionCoeff = 0.5
+  let rqtMaxSpeedTransfer = 200.0
 end
 
 module Box = struct

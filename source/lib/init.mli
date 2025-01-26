@@ -2,6 +2,7 @@ module Data : sig
   val dt : float
   val gravity : float
   val rqtFrictionCoeff : float
+  val rqtMaxSpeedTransfer : float
 end
 
 module Box : sig
