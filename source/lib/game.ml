@@ -24,18 +24,7 @@ let game_init liste_brique =
 
 
 
-  let raquette_update = 
-    let raquette_outside x =
-      if(x>(Init.Box.supx +. Init.Box.infx -. float_of_int Init.RaquetteInit.width)) then (Init.Box.supx +. Init.Box.infx -. float_of_int Init.RaquetteInit.width) 
-      else if (x<0.) then 0. else x ;
-    in
-    let balle_up _ =
-      let (z,v) = Graphics.mouse_pos () in
-      match Graphics.mouse_pos () with
-        |(xraq,_) -> print_endline "zoo" ;(print_endline (string_of_int (z));(raquette_outside(float_of_int xraq),0.))
-    in
-    print_endline "update";
-    Flux.map balle_up (Flux.constant((0.,0.)))
+
 
 let balle_update : raquette -> balle -> quadtree -> balle Flux.t =
   fun (mouse_x, mouse_dx)
@@ -125,7 +114,18 @@ let rec game_update : etat -> etat Flux.t =
     let nbBrique = 16 in
 
 
-    let raquette_flux = raquette_update in
+    let raquette_update = 
+      let raquette_outside x =
+        if(x>(Init.Box.supx +. Init.Box.infx -. float_of_int Init.RaquetteInit.width)) then (Init.Box.supx +. Init.Box.infx -. float_of_int Init.RaquetteInit.width) 
+        else if (x<0.) then 0. else x ;
+      in
+      let balle_up _ =
+        let (z,v) = Graphics.mouse_pos () in
+        match Graphics.mouse_pos () with
+          |(xraq,_) -> print_endline "zoo" ;(print_endline (string_of_int (z));(raquette_outside(float_of_int xraq),0.))
+      in
+      print_endline "update";
+      Flux.map balle_up (Flux.constant((0.,0.))) in
 
     let (score_flux, lives) = score_update score balle in
 
@@ -166,7 +166,7 @@ let rec game_update : etat -> etat Flux.t =
 
     let map4 f i1 i2 i3 i4 = Flux.(apply (apply (apply (apply (constant f) i1) i2) i3) i4) in
 
-    let flux_normal = map4 (fun b r s q -> (b, r, s, q)) balle_flux raquette_flux score_flux quadtreeB_flux in
+    let flux_normal = map4 (fun b r s q -> (b, r, s, q)) balle_flux raquette_update score_flux quadtreeB_flux in
 
     Flux.unless flux_normal (fun (b, r, s, q) -> cond b q s r) (fun (b, r, s, q) -> game_update (b, r, s, q))
 
