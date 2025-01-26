@@ -31,6 +31,10 @@ let proj v p : vector =
 let mirror v m : vector =
   (sub (scale (proj v m) 2.0) v)
 
+let normalise (x,y) : vector =
+  let abs = norm (x,y) in
+  (x,y)
+
 let to_string (x,y) : string =
   "("^(Float.to_string x)^","^(Float.to_string y)^")"
 
@@ -44,12 +48,10 @@ let to_string (x,y) : string =
     () *)
 
 
-    let is_colliding balle rectangle (vx,vy) : (float*float)  =
+let is_colliding balle rectangle (vx,vy) : (float*float)  =
 
-    let normalise x y : (float*float) =
-      let abs = x**2.0 +. y**2.0 in
-      (x/.abs),(y/.abs)
-    and vect_to_dir (vx,vy) : (float*float) =
+    
+    let vect_to_dir (vx,vy) : (float*float) =
       if (vx >= vy) then
         if (vx >= 0.0)
           then (1.0,0.0)
@@ -61,10 +63,12 @@ let to_string (x,y) : string =
     in
     let is_point_in_ball_n px py cx cy r : (float*float) =
       if (((px -. cx)**2.0) +. (( py -. cy)**2.0 ) <= r**2.0) 
-        then (normalise (cx -. px) (cy -. py))
+        then
+          let d : vector = ((cx -. px),(cy -. py)) in
+          (normalise d)
         else (0.0,0.0)
     and is_point_in_rect px py rx ry rtx rty : bool =
-      if ((rx <= px) && (px <= (rx +. rtx)) && (ry <= py) && (py <= (ry +. rty))) then true else false
+      ((rx <= px) && (px <= (rx +. rtx)) && (ry <= py) && (py <= (ry +. rty)))
     in
   
     match balle with
@@ -147,12 +151,14 @@ module Collision = struct
         match l with
         | [] -> ((x,y),(rebond_x x dx, rebond_y y dy))
         | (bx,by)::q -> match is_colliding ((x,y), BalleInit.radius) ((bx, by), (float_of_int TailleBriqueInit.width, float_of_int TailleBriqueInit.height)) (dx,dy) with
-                        | (0.0,0.0) -> print_endline("apagna");aux2 (x,y) (rebond_x x dx, rebond_y y dy) q
-                        | (1.0, 0.0) -> print_endline("apagnan");aux2 (bx +. 1. +. float_of_int TailleBriqueInit.width,y) (-.dx, dy) q
-                        | (-1.0, 0.0) -> print_endline("apagnann");aux2 (bx -. 1., y) (-.dx, dy) q
-                        | (0.0, 1.0) -> print_endline("apagnannn");aux2 (x, by +. float_of_int TailleBriqueInit.height) (dx, -.dy) q
-                        | (0.0, -1.0) -> print_endline("apagnannnnn");aux2 (x,by -. 12.) (dx, -.dy) q
-                        | (a,b) -> aux2 (x -. a *. dt,y -. b *. dt) (a,b) q
+                        | (0.0,0.0) -> aux2 (x,y) (rebond_x x dx, rebond_y y dy) q
+                        | (1.0, 0.0) -> aux2 (bx +. 1. +. float_of_int TailleBriqueInit.width,y) (-.dx, dy) q
+                        | (-1.0, 0.0) -> aux2 (bx -. 1., y) (-.dx, dy) q
+                        | (0.0, 1.0) -> aux2 (x, by +. 1. +. float_of_int TailleBriqueInit.height) (dx, -.dy) q
+                        | (0.0, -1.0) -> aux2 (x,by -. 1.) (dx, -.dy) q
+                        | (a,b) ->
+                          print_endline("normal is : "^(to_string (a,b))^", de norme "^(Float.to_string (norm (a,b)))); 
+                          aux2 (x +. a *. dt *. 5.0,y +. b *. dt *. 5.0) (a,b) q
                           
 
       in
