@@ -1,8 +1,7 @@
 module Data : sig
   val dt : float
   val gravity : float
-  val raquetteAngle : float
-  val angleSpeedThreshold : float
+  val rqtFrictionCoeff : float
 end
 
 module Box : sig

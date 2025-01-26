@@ -152,15 +152,11 @@ module Collision = struct
       && (x <= (mouse_x) +. float_of_int RaquetteInit.width))
     then (
       print_endline("Boing !"); 
-      let pos_n : float = (1.0) in (* Position normalisée de la balle : -1.0 si sur la gauche de la raquette, 1.0 si sur la droite, 0.0 si on touche le centre*)
-      let rot : vector = rotated (0.0, 1.0) ((pos_n *. -1.0) *. Data.raquetteAngle /. 2.0) in
-      let n_s : vector = invert (mirror (dx,dy) rot) in
-      print_endline("Pos_n : "^(Float.to_string pos_n)); 
-      print_endline("Speed was : "^(Float.to_string mouse_dx)); 
-      print_endline("rot is : "^(to_string rot)^", de norme "^(Float.to_string (norm rot))); 
+      let (rx,ry) : vector = (dx +. mouse_dx *. Data.rqtFrictionCoeff, -.dy) in
+      print_endline("Speed was : "^(Float.to_string mouse_dx));
       print_endline("old speed is : "^(to_string (dx, dy))^", de norme "^(Float.to_string (norm (dx, dy)))); 
-      print_endline("new speed is : "^(to_string n_s)^", de norme "^(Float.to_string (norm n_s)));
-      ((x,y +. 1.0),n_s)
+      print_endline("new speed is : "^(to_string (rx,ry))^", de norme "^(Float.to_string (norm (rx,ry))));
+      ((x,y +. 1.0),(rx,ry))
 
     ) else 
       let rec aux2 (x,y) (dx,dy) l = 

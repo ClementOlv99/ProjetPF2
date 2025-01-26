@@ -34,7 +34,7 @@ let draw_balle b =
 
 let draw_life l =
   Graphics.moveto 10 22;
-  Graphics.set_color Graphics.green;
+  Graphics.set_color Graphics.black;
   Graphics.draw_string ("nombre de vie : " ^ (string_of_int l))
 (**
 	fonction de dessin des points de vie du joueur
