@@ -23,7 +23,7 @@ let div (x,y) s : vector =
   (x /. s, y/.s)
 
 let norm (x,y) : float =
-  (x**2.0 +. y**2.0)
+  Float.sqrt (x**2.0 +. y**2.0)
 
 let proj v p : vector =
   (scale p ((dot v p) /. (norm p)**2.0))
@@ -33,7 +33,7 @@ let mirror v m : vector =
 
 let normalise (x,y) : vector =
   let abs = norm (x,y) in
-  (x,y)
+  (x/.abs,y/.abs)
 
 let to_string (x,y) : string =
   "("^(Float.to_string x)^","^(Float.to_string y)^")"
@@ -152,13 +152,32 @@ module Collision = struct
         | [] -> ((x,y),(rebond_x x dx, rebond_y y dy))
         | (bx,by)::q -> match is_colliding ((x,y), BalleInit.radius) ((bx, by), (float_of_int TailleBriqueInit.width, float_of_int TailleBriqueInit.height)) (dx,dy) with
                         | (0.0,0.0) -> aux2 (x,y) (rebond_x x dx, rebond_y y dy) q
-                        | (1.0, 0.0) -> aux2 (bx +. 1. +. float_of_int TailleBriqueInit.width,y) (-.dx, dy) q
-                        | (-1.0, 0.0) -> aux2 (bx -. 1., y) (-.dx, dy) q
-                        | (0.0, 1.0) -> aux2 (x, by +. 1. +. float_of_int TailleBriqueInit.height) (dx, -.dy) q
-                        | (0.0, -1.0) -> aux2 (x,by -. 1.) (dx, -.dy) q
+                        | (1.0, 0.0) ->
+                          let (vx, vy) : vector = (-.dx, dy) in
+                          print_endline("old speed is : "^(to_string (dx, dy))^", de norme "^(Float.to_string (norm (dx, dy)))); 
+                          print_endline("new speed is : "^(to_string (vx, vy))^", de norme "^(Float.to_string (norm (vx, vy))));
+                          aux2 (x +. vx *. dt *. 2.0,y +. vy *. dt *. 2.0)  (vx, vy) q
+                        | (-1.0, 0.0) ->
+                          let (vx, vy) : vector = (-.dx, dy) in
+                          print_endline("old speed is : "^(to_string (dx, dy))^", de norme "^(Float.to_string (norm (dx, dy)))); 
+                          print_endline("new speed is : "^(to_string (vx, vy))^", de norme "^(Float.to_string (norm (vx, vy))));
+                          aux2 (x +. vx *. dt *. 2.0,y +. vy *. dt *. 2.0)  (vx, vy) q
+                        | (0.0, 1.0) ->
+                          let (vx, vy) : vector = (dx, -.dy) in
+                          print_endline("old speed is : "^(to_string (dx, dy))^", de norme "^(Float.to_string (norm (dx, dy)))); 
+                          print_endline("new speed is : "^(to_string (vx, vy))^", de norme "^(Float.to_string (norm (vx, vy))));
+                          aux2 (x +. vx *. dt *. 2.0,y +. vy *. dt *. 2.0)  (vx, vy) q
+                        | (0.0, -1.0) ->
+                          let (vx, vy) : vector = (dx, -.dy) in
+                          print_endline("old speed is : "^(to_string (dx, dy))^", de norme "^(Float.to_string (norm (dx, dy)))); 
+                          print_endline("new speed is : "^(to_string (vx, vy))^", de norme "^(Float.to_string (norm (vx, vy))));
+                          aux2 (x +. vx *. dt *. 2.0,y +. vy *. dt *. 2.0)  (vx, vy) q
                         | (a,b) ->
-                          print_endline("normal is : "^(to_string (a,b))^", de norme "^(Float.to_string (norm (a,b)))); 
-                          aux2 (x +. a *. dt *. 5.0,y +. b *. dt *. 5.0) (a,b) q
+                          (* print_endline("normal is : "^(to_string (a,b))^", de norme "^(Float.to_string (norm (a,b))));  *)
+                          let (vx, vy) : vector = invert (mirror (dx,dy) (a,b)) in
+                          print_endline("old speed is : "^(to_string (dx, dy))^", de norme "^(Float.to_string (norm (dx, dy)))); 
+                          print_endline("new speed is : "^(to_string (vx, vy))^", de norme "^(Float.to_string (norm (vx, vy)))); 
+                          aux2 (x +. vx *. dt *. 2.0,y +. vy *. dt *. 2.0) (vx, vy) q
                           
 
       in
