@@ -1,9 +1,9 @@
 open Init
 
 
-let draw_raquette (xpos,vpos) = Graphics.draw_rect (int_of_float (raquette_outside (float_of_int (fst (Graphics.mouse_pos ()))))) RaquetteInit.ypos RaquetteInit.width RaquetteInit.height;
+let draw_raquette (xpos,vpos) = Graphics.draw_rect (int_of_float xpos) RaquetteInit.ypos RaquetteInit.width RaquetteInit.height;
                          Graphics.set_color Graphics.blue;
-                         Graphics.fill_rect (int_of_float (raquette_outside (float_of_int (fst (Graphics.mouse_pos ()))))) RaquetteInit.ypos RaquetteInit.width RaquetteInit.height
+                         Graphics.fill_rect (int_of_float xpos) RaquetteInit.ypos RaquetteInit.width RaquetteInit.height
 
 let draw_balle b = 
   match b with
@@ -11,3 +11,9 @@ let draw_balle b =
                    Graphics.set_color Graphics.red;
                    Graphics.fill_circle (int_of_float x) (int_of_float y) (int_of_float BalleInit.radius)
     | _ -> ()
+
+let draw_score (s,l) =
+  Graphics.moveto 10 10;
+  Graphics.set_color Graphics.green;
+  Graphics.draw_string ("score :" ^ (string_of_int s));
+  Graphics.draw_string ("nombre de vie :" ^ (string_of_int l));

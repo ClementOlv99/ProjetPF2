@@ -110,7 +110,6 @@ let score_update : score -> balle -> (score Flux.t * int) =
         (Flux.constant (current_score, lives - 1), 0)
       else
         (Flux.constant (current_score, lives - 1), 1)
-
     else
         (Flux.constant (current_score, lives), 1)
 
