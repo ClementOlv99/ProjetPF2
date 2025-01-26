@@ -145,9 +145,9 @@ module Collision = struct
     else 
       let rec aux2 (x,y) (dx,dy) l = 
         match l with
-        | [] -> ((x,y),(dx,dy))
+        | [] -> ((x,y),(rebond_x x dx, rebond_y y dy))
         | (bx,by)::q -> match is_colliding ((x,y), BalleInit.radius) ((bx, by), (float_of_int TailleBriqueInit.width, float_of_int TailleBriqueInit.height)) (dx,dy) with
-                        | (0.0,0.0) -> aux2 (x,y) (rebond_x x dx, rebond_y y dy) q
+                        | (0.0,0.0) -> print_endline("apagna");aux2 (x,y) (rebond_x x dx, rebond_y y dy) q
                         | (1.0, 0.0) -> print_endline("apagnan");aux2 (bx +. 1. +. float_of_int TailleBriqueInit.width,y) (-.dx, dy) q
                         | (-1.0, 0.0) -> print_endline("apagnann");aux2 (bx -. 1., y) (-.dx, dy) q
                         | (0.0, 1.0) -> print_endline("apagnannn");aux2 (x, by +. float_of_int TailleBriqueInit.height) (dx, -.dy) q
