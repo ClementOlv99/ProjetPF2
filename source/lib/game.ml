@@ -130,8 +130,8 @@ let score_update : score -> quadtree -> balle -> score Flux.t =
   in
   let add_score tree balle = (List.length (destrbriqulist tree balle))
   in
-  fun (_, lives) tree ((x, y), v) ->
-        Flux.constant((add_score tree ((x, y), v), live_up lives y))
+  fun (current_score, lives) tree ((x, y), v) ->
+        Flux.constant(current_score + add_score tree ((x, y), v), live_up lives y)
     
 
 

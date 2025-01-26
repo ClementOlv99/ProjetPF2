@@ -37,7 +37,7 @@ let draw flux_etat =
       (* FIN DESSIN ETAT *)
       Graphics.synchronize ();
       Unix.sleepf Data.dt;
-      loop flux_etat' (last_score + score etat)
+      loop flux_etat' (score etat)
     | _ -> assert false
   in
   Graphics.open_graph graphic_format;
