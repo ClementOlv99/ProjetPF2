@@ -166,7 +166,7 @@ fun lim briques ->
 (*   paramètre(s) : le quadtree à purifier                                    *)
 (*   résultat     : le quadtree post opération, plus propre.                  *)
 (******************************************************************************)
-(*let rec clean : quadtree -> quadtree =
+let rec clean : quadtree -> quadtree =
 fun tree ->
 	let clean_etage : quadtree -> quadtree =
 	fun tree -> match tree with
@@ -179,17 +179,7 @@ fun tree ->
 		in
 	match tree with
 		|Leaf (_, _) -> tree
-		|Node (lim, br_ne, br_se, br_no, br_so) -> Node(lim, clean (clean_etage br_ne), clean (clean_etage br_se), clean (clean_etage br_no), clean (clean_etage br_so))*)
-
-
-let clean_etage : quadtree -> quadtree =
-fun tree -> match tree with
-	|Node (lim, Leaf(_, None), Leaf(_, None), Leaf(_, None), Leaf(_, None)) -> Leaf(lim, None)
-	|Node (lim, Leaf(_, Some(coord)), Leaf(_, None), Leaf(_, None), Leaf(_, None))  -> Leaf(lim, Some(coord))
-	|Node (lim, Leaf(_, None), Leaf(_, Some(coord)), Leaf(_, None), Leaf(_, None))  -> Leaf(lim, Some(coord))
-	|Node (lim, Leaf(_, None), Leaf(_, None), Leaf(_, Some(coord)), Leaf(_, None)) -> Leaf(lim, Some(coord))
-	|Node (lim, Leaf(_, None), Leaf(_, None), Leaf(_, None), Leaf(_, Some(coord)))  -> Leaf(lim, Some(coord))
-	|_ -> tree
+		|Node (lim, br_ne, br_se, br_no, br_so) -> Node(lim, clean (clean_etage br_ne), clean (clean_etage br_se), clean (clean_etage br_no), clean (clean_etage br_so))
 
 (******************************************************************************)
 (*      fonction interne qui retire une brique d'un quadtree.                 *)
@@ -202,24 +192,20 @@ fun tree -> match tree with
 let rec kill : quadtree -> coord -> quadtree =
 fun tree coord_cible ->
 	match tree with
-		|Leaf(_, None) -> (print_endline ("doing nothing");tree)
-		|Leaf(lim, Some(coord)) -> if (equal coord coord_cible) then (let (x,y) = coord in print_endline ("killing leaf with coordinates =");print_float(x);print_float(y);Leaf(lim, None)) else (print_endline ("doing nothing");tree)
+		|Leaf(_, None) -> tree
+		|Leaf(lim, Some(coord)) -> if (equal coord coord_cible) then let (x,y) = coord in Leaf(lim, None) else tree
 		|Node (lim, br_ne, br_se, br_no, br_so) ->
 			match placement coord_cible lim with
-				|true,true   -> print_endline ("searching no");clean_etage (kill br_ne coord_cible)
-				|true,false  -> print_endline ("searching ne");clean_etage (kill br_se coord_cible)
-				|false,true  -> print_endline ("searching so");clean_etage (kill br_no coord_cible)
-				|false,false -> print_endline ("searching se");clean_etage (kill br_so coord_cible)
-
+				|true,true   -> Node (lim, (kill br_ne coord_cible), br_se, br_no, br_so)
+				|true,false  -> Node (lim, br_ne, (kill br_se coord_cible), br_no, br_so)
+				|false,true  -> Node (lim, br_ne, br_se, (kill br_no coord_cible), br_so)
+				|false,false -> Node (lim, br_ne, br_se, br_no,(kill br_so coord_cible))
 
 let rec purge_tree : quadtree -> coord list -> quadtree =
 fun tree briques ->
-	print_endline "purge_tree";
 	match briques with
-		|[]     -> (*clean *)tree
-		|(t::q) -> let (x,y) = t in print_endline("calling kill tree with coordinates =");print_float(x);print_float(y);purge_tree (kill tree t) q
-
-
+		|[]     -> clean tree
+		|(t::q) -> purge_tree (kill tree t) q
 
 let rec draw_briques : quadtree -> int -> int -> unit =
 fun tree width height ->

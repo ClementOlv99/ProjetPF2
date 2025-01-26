@@ -1,5 +1,5 @@
 module Data = struct
-  let dt = 0.1 (* 60 Hz *)
+  let dt = 0.01 (* 60 Hz *)
 end
 
 module Box = struct

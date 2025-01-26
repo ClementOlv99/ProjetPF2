@@ -12,7 +12,7 @@ type etat = balle * raquette * score * (quadtree * int)
 
 let game_init liste_brique = 
 
-  let balle = ((Box.supx/.10. +. 200., Box.supy -. 450.), (35., -50.)) in 
+  let balle = ((Box.supx/.10. +. 200., Box.supy -. 100.), (35., -50.)) in 
 
   let raquette = (0., 0.) in  
 
@@ -24,18 +24,18 @@ let game_init liste_brique =
 
 
 
-let raquette_updater = 
-  let raquette_outside x =
-    if(x>(Init.Box.supx +. Init.Box.infx -. float_of_int Init.RaquetteInit.width)) then (Init.Box.supx +. Init.Box.infx -. float_of_int Init.RaquetteInit.width) 
-    else if (x<0.) then 0. else x ;
-  in
-  let balle_up _ =
-    let (z,v) = Graphics.mouse_pos () in
-    match Graphics.mouse_pos () with
-      |(xraq,_) -> print_endline "zoo" ;(print_endline (string_of_int (z));Unix.sleepf 0.1;(raquette_outside(float_of_int xraq),0.))
-  in
-  print_endline "update";
-  Flux.map balle_up (Flux.constant((0.,0.)))
+  let raquette_update = 
+    let raquette_outside x =
+      if(x>(Init.Box.supx +. Init.Box.infx -. float_of_int Init.RaquetteInit.width)) then (Init.Box.supx +. Init.Box.infx -. float_of_int Init.RaquetteInit.width) 
+      else if (x<0.) then 0. else x ;
+    in
+    let balle_up _ =
+      let (z,v) = Graphics.mouse_pos () in
+      match Graphics.mouse_pos () with
+        |(xraq,_) -> print_endline "zoo" ;(print_endline (string_of_int (z));(raquette_outside(float_of_int xraq),0.))
+    in
+    print_endline "update";
+    Flux.map balle_up (Flux.constant((0.,0.)))
 
 let balle_update : raquette -> balle -> quadtree -> balle Flux.t =
   fun (mouse_x, mouse_dx)
@@ -70,7 +70,7 @@ let balle_update : raquette -> balle -> quadtree -> balle Flux.t =
       in
     
     let blist = aux (find_briques quadtreeB ((x, y),(dx,dy)))  [] in
-      run (Collision.rebond (x,y) (dx, dy) blist (mouse_x, mouse_dx))
+    run (Collision.rebond (x,y) (dx, dy) blist (mouse_x, mouse_dx))
 
     
     let quadtree_update : quadtree -> balle -> (quadtree * int) Flux.t =
@@ -100,7 +100,7 @@ let balle_update : raquette -> balle -> quadtree -> balle Flux.t =
           
         in
           
-        Flux.constant (a_supprimer quadtree ((x, y), (dx, dy)))        
+        Flux.constant (a_supprimer quadtree ((x, y), (dx, dy)))         
         
 
 
@@ -117,15 +117,15 @@ let score_update : score -> balle -> (score Flux.t * int) =
         (Flux.constant (current_score, lives), 1)
 
 
-let rec game_update : raquette Flux.t -> etat -> etat Flux.t =
-  fun rflux (balle, raquette, score, (quadtreeB, nbBrique)) ->
+let rec game_update : etat -> etat Flux.t =
+  fun (balle, raquette, score, (quadtreeB, nbBrique)) ->
 
     let balle_flux = balle_update  raquette balle quadtreeB in
  
     let nbBrique = 16 in
 
 
-    let raquette_flux rflux = if(rflux = Flux.vide) then (print_endline "falseupdate";raquette_updater) else rflux in
+    let raquette_flux = raquette_update in
 
     let (score_flux, lives) = score_update score balle in
 
@@ -153,7 +153,7 @@ let rec game_update : raquette Flux.t -> etat -> etat Flux.t =
       print_endline(string_of_float (fst r));
       aux_cond briques ((nx, ny), (ndx, ndy)) 
       || 
-      ((ny -. BalleInit.radius < (float_of_int RaquetteInit.ypos +. float_of_int RaquetteInit.height)) && ((ny -. BalleInit.radius) > (float_of_int RaquetteInit.ypos +. float_of_int RaquetteInit.height -. 5.) && (ndy < 0.) && (nx >=  (fst (r)) && nx <= ((fst (r)) +. (float_of_int RaquetteInit.width)))))
+      ((ny -. BalleInit.radius < (float_of_int RaquetteInit.ypos +. float_of_int RaquetteInit.height)) && ((ny -. BalleInit.radius) > (float_of_int RaquetteInit.ypos +. float_of_int RaquetteInit.height -. 5.) && (ndy < 0.) && (nx >= (fst (r)) && nx <= (( (fst r))) +. (float_of_int RaquetteInit.width))))
       ||
       Collision.contact_x nx ndx
       ||
@@ -161,8 +161,35 @@ let rec game_update : raquette Flux.t -> etat -> etat Flux.t =
 
     in
 
+  
+
+
     let map4 f i1 i2 i3 i4 = Flux.(apply (apply (apply (apply (constant f) i1) i2) i3) i4) in
 
-    let flux_normal fluxr = map4 (fun b r s q -> (b, r, s, q)) balle_flux (raquette_flux fluxr) score_flux quadtreeB_flux in
+    let flux_normal = map4 (fun b r s q -> (b, r, s, q)) balle_flux raquette_flux score_flux quadtreeB_flux in
 
-    Flux.unless (flux_normal rflux) (fun (b, r, s, q) -> cond b q s r) (fun (b, r, s, q) -> game_update rflux (b, r, s, q))
+    Flux.unless flux_normal (fun (b, r, s, q) -> cond b q s r) (fun (b, r, s, q) -> game_update (b, r, s, q))
+
+
+
+
+    
+
+      
+
+
+    
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
