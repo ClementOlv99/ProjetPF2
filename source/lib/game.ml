@@ -22,14 +22,22 @@ let rec create_level2 : bool -> coord -> coord list =
       |(x, y) when (x > Box.supx -. Float.of_int TailleBriqueInit.width) -> create_level2 (bool) (Box.infx, y +. (Float.of_int TailleBriqueInit.height))
       |(x, y)                     -> if bool then (x, y)::(create_level2 (not bool) (x +. (Float.of_int TailleBriqueInit.width), y)) else (create_level2 (not bool )(x +. (Float.of_int TailleBriqueInit.width), y))
     
-
 let liste_brique_num i =
   match i with
   |1 -> create_level (Box.infx, (Box.supy +. Box.infy) /.2.0)
   |2 -> [(100.,100.);(100.,200.);(100.,300.);(100.,400.);(100.,500.);(100.,600.);(200.,100.);(200.,200.);(200.,300.);(200.,400.);(200.,500.);(200.,600.);(300.,100.);(300.,200.);(300.,300.);(300.,400.);(300.,500.);(300.,600.);(400.,100.);(400.,200.);(400.,300.);(400.,400.);(400.,500.);(400.,600.);(500.,100.);(500.,200.);(500.,300.);(500.,400.);(500.,500.);(500.,600.);(600.,100.);(600.,200.);(600.,300.);(600.,400.);(600.,500.);(600.,600.);(700.,100.);(700.,200.);(700.,300.);(700.,400.);(700.,500.);(700.,600.);]
   |3 -> create_level2 true (Box.infx, (Box.supy +. Box.infy) /.2.0)
   |_ -> []
+(**
+	fonction qui créé les listes de briques
+	- signature : liste_brique_num : int -> list coord
 
+	- paramètre(s) :
+		- l'identifiant de la liste créé
+
+	- résultat :
+		- la liste associé à l'identifiant
+*)
 
 let game_init =
 
