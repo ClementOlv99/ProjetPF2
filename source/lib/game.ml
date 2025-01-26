@@ -40,7 +40,7 @@ let balle_update : raquette -> balle -> quadtree -> balle Flux.t =
     ((x, y), (dx, dy))
     quadtreeB -> 
 
-    let g = 9.81 in
+    let g = Data.gravity in
 
 
     let rec aux briques l_col =

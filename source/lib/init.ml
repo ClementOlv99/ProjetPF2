@@ -1,5 +1,10 @@
 module Data = struct
+(** Données liées à la physique du jeu. 
+    *)
   let dt = 0.01 (* 60 Hz *)
+  let gravity = 40.
+  (** Gravité, en m.s⁻² 
+      *)
 end
 
 module Box = struct
