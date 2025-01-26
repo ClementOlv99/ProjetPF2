@@ -22,3 +22,4 @@ sig
 end
 
 
+val raquette_outside : float -> float
