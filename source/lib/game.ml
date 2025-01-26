@@ -153,7 +153,7 @@ let rec game_update : etat -> etat Flux.t =
       print_endline(string_of_float (fst r));
       aux_cond briques ((nx, ny), (ndx, ndy)) 
       || 
-      ((ny -. BalleInit.radius < (float_of_int RaquetteInit.ypos +. float_of_int RaquetteInit.height)) && ((ny -. BalleInit.radius) > (float_of_int RaquetteInit.ypos +. float_of_int RaquetteInit.height -. 5.) && (ndy < 0.) && (nx >= (fst (r)) && nx <= (( (fst r))) +. (float_of_int RaquetteInit.width))))
+      ((ny -. BalleInit.radius < (float_of_int RaquetteInit.ypos +. float_of_int RaquetteInit.height)) && ((ny -. BalleInit.radius) > (float_of_int RaquetteInit.ypos +. float_of_int RaquetteInit.height -. 5.) && (ndy < 0.) && (nx >= float_of_int (fst (Graphics.mouse_pos ())) && nx <= ((float_of_int (fst (Graphics.mouse_pos ()))) +. (float_of_int RaquetteInit.width)))))
       ||
       Collision.contact_x nx ndx
       ||
