@@ -16,10 +16,24 @@ fun cursor -> match cursor with
   |(x, y) when (x > Box.supx -. Float.of_int TailleBriqueInit.width) -> create_level(Box.infx, y +. (Float.of_int TailleBriqueInit.height))
   |(x, y)                     -> (x, y)::(create_level (x +. (Float.of_int TailleBriqueInit.width), y))
 
+let rec create_level2 : bool -> coord -> coord list =
+    fun bool cursor -> match cursor with
+      |(_, y) when (y > Box.supy -. Float.of_int TailleBriqueInit.height) -> []
+      |(x, y) when (x > Box.supx -. Float.of_int TailleBriqueInit.width) -> create_level2 (bool) (Box.infx, y +. (Float.of_int TailleBriqueInit.height))
+      |(x, y)                     -> if bool then (x, y)::(create_level2 (not bool) (x +. (Float.of_int TailleBriqueInit.width), y)) else (create_level2 (not bool )(x +. (Float.of_int TailleBriqueInit.width), y))
+    
+
+let liste_brique_num i =
+  match i with
+  |1 -> create_level (Box.infx, (Box.supy +. Box.infy) /.2.0)
+  |2 -> [(100.,100.);(100.,200.);(100.,300.);(100.,400.);(100.,500.);(100.,600.);(200.,100.);(200.,200.);(200.,300.);(200.,400.);(200.,500.);(200.,600.);(300.,100.);(300.,200.);(300.,300.);(300.,400.);(300.,500.);(300.,600.);(400.,100.);(400.,200.);(400.,300.);(400.,400.);(400.,500.);(400.,600.);(500.,100.);(500.,200.);(500.,300.);(500.,400.);(500.,500.);(500.,600.);(600.,100.);(600.,200.);(600.,300.);(600.,400.);(600.,500.);(600.,600.);(700.,100.);(700.,200.);(700.,300.);(700.,400.);(700.,500.);(700.,600.);]
+  |3 -> create_level2 true (Box.infx, (Box.supy +. Box.infy) /.2.0)
+  |_ -> []
+
 
 let game_init =
 
-  let liste_brique = create_level (Box.infx, (Box.supy +. Box.infy) /.2.0) in
+  let liste_brique = liste_brique_num 3 in
 
   let balle = ((Box.supx/.10. +. 200., (Float.of_int RaquetteInit.ypos) +. Box.supy /. 29.), (35., 250.)) in
 
@@ -147,9 +161,15 @@ let rec game_update : etat -> etat Flux.t =
       in
       let balle_up _ =
         match Graphics.mouse_pos () with
-          |(xraq,_) -> (raquette_outside(float_of_int xraq),0.)
+          |(xraq,_) -> raquette_outside(float_of_int xraq)
       in
-      Flux.map balle_up (Flux.constant((0.,0.))) in
+      Flux.unfold
+      (fun prev_x ->
+        let x, _ = Graphics.mouse_pos () in
+        let dx = ((balle_up x) -. prev_x) /. Data.dt in
+        Some ((balle_up x, dx), prev_x))
+        0.0
+       in
 
     let (score_flux,live) = score_update score quadtreeB balle in
 
@@ -192,30 +212,6 @@ let rec game_update : etat -> etat Flux.t =
 
       Flux.unless flux_normal (fun (b, r, s, q) -> cond b q s r) (fun (b, r, s, q) -> game_update (b, r, s, q))
     else 
-      (if(nbBrique<0) then (print_endline "vous avez gagné!") else ();
+      (if(nbBrique=0) then (print_endline "vous avez gagné!") else ();
       Flux.vide)
-
-
-
-
-
-    
-
-      
-
-
-    
-
-
-
-
-
-
-
-    
-
-
-
-
-
 
