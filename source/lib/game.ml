@@ -10,15 +10,40 @@ type balle = (float * float) * (float * float)
 type score = (int * int)
 type etat = balle * raquette * score * (quadtree * int)
 
-let game_init liste_brique = 
+let rec create_level : coord -> coord list =
+fun cursor -> match cursor with
+  |(_, y) when (y > Box.supy -. Float.of_int TailleBriqueInit.height) -> []
+  |(x, y) when (x > Box.supx -. Float.of_int TailleBriqueInit.width) -> create_level(Box.infx, y +. (Float.of_int TailleBriqueInit.height))
+  |(x, y)                     -> (x, y)::(create_level (x +. (Float.of_int TailleBriqueInit.width), y))
+(*
+let rec create_level : coord -> coord list =
+fun cursor -> match cursor with
+  |(_, y) when (y > Box.supy -. Float.of_int TailleBriqueInit.height) -> []
+  |(x, y) when (x > Box.supx -. Float.of_int TailleBriqueInit.width) -> create_level(Box.infx, y +. (Float.of_int TailleBriqueInit.height))
+  |(x, y)                     -> (x, y)::(create_level (x +. (Float.of_int TailleBriqueInit.width), y))
 
-  let balle = ((Box.supx/.10. +. 200., Box.supy -. 100.), (35., -50.)) in 
+let game_init =
 
-  let raquette = (0., 0.) in  
+  let balle = ((Box.supx/.10. +. 200., (Float.of_int RaquetteInit.ypos) +. Box.supy /. 29.), (35., 250.)) in
+
+  let raquette = (0., 0.) in
 
   let score = 0, 3 in
 
-  let quadtreeB = create_tree ((0.,0.),(Box.supx, Box.supy)) in
+  let quadtreeB = create_tree ((0.,0.),(Box.supx, Box.supy)) (create_level (Box.infx, (Box.supy +. Box.infy) /.2.0)) in*)
+
+
+let game_init =
+
+  let liste_brique = create_level (Box.infx, (Box.supy +. Box.infy) /.2.0) in
+
+  let balle = ((Box.supx/.10. +. 200., (Float.of_int RaquetteInit.ypos) +. Box.supy /. 29.), (35., 250.)) in
+
+  let raquette = (0., 0.) in
+
+  let score = 0, 3 in
+
+  let quadtreeB = create_tree ((0.,0.),(Box.supx, Box.supy)) liste_brique in
 
   (balle, raquette, score, (quadtreeB, List.length liste_brique))
 

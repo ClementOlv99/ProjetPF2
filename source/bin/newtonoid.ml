@@ -48,4 +48,4 @@ let draw flux_etat =
 
 let baseetat = ( ((80.,80.),5.), 40.,0,((create_tree ((0.,0.),(400.,400.))),2))
 
-let () = draw (game_update (game_init []))
+let () = draw (game_update (game_init))

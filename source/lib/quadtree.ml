@@ -144,11 +144,6 @@ fun tree coord_new_br ->
 			|None    -> aux tree coord_new_br
 			|Some(coord) -> if (equal coord coord_new_br) then tree else aux tree coord_new_br
 
-let create_tree : limites -> quadtree =
-fun lim ->
-	let (_,(x2,y2)) = lim in
-	Node(lim, Leaf(quadrant_ne lim, Some((3.*. (x2 /. 4.)), (3.*. (y2 /. 4.)))), Leaf(quadrant_se lim, Some((3.*. (x2 /. 4.)),(1.*. (y2 /. 4.)))), Leaf(quadrant_no lim, Some((1.*. (x2 /. 4.)),(3.*. (y2 /. 4.)))), Leaf(quadrant_so lim, Some((1.*. (x2 /. 4.)),(1.*. (y2 /. 4.)))))
-(*
 let create_tree : limites -> coord list -> quadtree =
 fun lim briques ->
 	let rec aux : quadtree -> coord list -> quadtree =
@@ -156,7 +151,7 @@ fun lim briques ->
 		|[] -> tree
 		|(t::q) -> aux (insert_tree tree t) q
 		in aux (Leaf(lim, None)) briques
-*)
+
 
 (******************************************************************************)
 (*      fonction interne de nettoyage du quadtree pour eviter les             *)

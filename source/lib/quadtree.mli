@@ -27,7 +27,7 @@ val predict : float -> ((float * float) * (float * float)) -> coord list
 		- les trois points de test de colisions future.
 *)
 
-val create_tree : limites (*-> coord list*) -> quadtree
+val create_tree : limites -> coord list -> quadtree
 (**
 	fonction de création du QuadTree initial.
 	- signature : create_tree : coord list -> tree
