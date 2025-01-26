@@ -211,9 +211,7 @@ fun tree width height ->
 		| Leaf (_,co) ->
 			( match co with
 				| None -> ()
-				| Some (x1,y1) ->  (*Graphics.draw_rect (int_of_float x1) (int_of_float y1) width height;
-									 Graphics.set_color Graphics.blue;
-									 Graphics.fill_rect (int_of_float x1) (int_of_float y1) width height;*)
+				| Some (x1,y1) ->
 									 deg_briques (int_of_float x1) (int_of_float y1) width height 255;
 			)
 		| Node (_,t1,t2,t3,t4) -> draw_briques t1 width height;
